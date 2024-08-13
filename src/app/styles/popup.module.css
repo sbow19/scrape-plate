@@ -1,0 +1,13 @@
+
+.popupContainer{
+    background-color: #f0f0f0;
+    /* padding: 10px; */
+    border: 1px solid #ccc;
+    height: 500px;
+    width: 500px
+}
+
+.myHeader{
+    font-size: 3rem
+}
+

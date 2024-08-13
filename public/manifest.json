@@ -9,16 +9,27 @@
         "default_popup": "build/index.html"
     },
     "background": {
-        
+        "service_worker": "background/service_worker.js",
+        "type": "module" 
     },
-    "commands": {},
+    "commands": {
+        "run-scrape": {
+            "suggested_key": {
+              "default": "Ctrl+Shift+S",
+              "mac": "Command+Shift+Y"
+            },
+            "description": "Run quick scrape on the current page."
+          }
+    },
     "permissions": [
         "sidePanel",
         "contextMenus",
         "sidePanel",
         "tabs",
         "activeTab",
-        "downloads"
+        "downloads",
+        "scripting",
+        "notifications"
     ],
     "options_page": "build/index.html",
     "side_panel": {
