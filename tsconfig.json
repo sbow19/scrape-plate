@@ -25,7 +25,13 @@
     "jsx": "react-jsx",
 
     "baseUrl": "./src",
-    "paths": {},
+    "paths": {
+      "#components/*": ["app/components/*"],
+      "#ducks/*": ["app/ducks/*"],
+      "#styles/*": ["app/styles/*"],
+      "#models/*": ["app/models/*"],
+      "#assets/*": ["assets/*"]
+    },
     "rootDir": "src",
     "outDir": "public/dist",
 

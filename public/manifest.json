@@ -12,7 +12,17 @@
         
     },
     "commands": {},
-    "permissions": [],
-    "options_page": "build/index.html"
+    "permissions": [
+        "sidePanel",
+        "contextMenus",
+        "sidePanel",
+        "tabs",
+        "activeTab",
+        "downloads"
+    ],
+    "options_page": "build/index.html",
+    "side_panel": {
+        "default_path": "build/index.html"
+    }
 
 }
