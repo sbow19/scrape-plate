@@ -27,6 +27,7 @@
     "baseUrl": "./src",
     "paths": {
       "#components/*": ["app/components/*"],
+      "#containers/*": ["app/containers/*"],
       "#ducks/*": ["app/ducks/*"],
       "#styles/*": ["app/styles/*"],
       "#models/*": ["app/models/*"],
@@ -34,7 +35,7 @@
       "@mock/*": ["__mocks__/*"]
     },
 
-    "rootDir": "src/ext",
+    "rootDir": "src",
     "outDir": "public",
 
     "typeRoots": [
@@ -43,11 +44,11 @@
     ],
   },
   "include": [
-    "src/ext/**/*"
+    "src/**/*"
   ],
   "exclude":[
     "__tests__",
     "__mocks__",
-
+    "assets/"
   ],
 }

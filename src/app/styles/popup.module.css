@@ -1,13 +1,75 @@
 
 .popupContainer{
     background-color: #f0f0f0;
-    /* padding: 10px; */
+    padding: 10px;
     border: 1px solid #ccc;
-    height: 500px;
-    width: 500px
+    height: 400px;
+    width: 600px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr 2fr 2fr 2fr 1fr;
+    gap: 10px;
 }
 
-.myHeader{
-    font-size: 3rem
+/* Header stylings*/
+
+.popupHeader {
+    height: 100%;
+    width: 100%;
+    grid-column: 1 / span 3;
+    grid-row: 1;
+    text-align: center;
+    background-color: #333;
+    color: white;
+    font-size: 24px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center
 }
 
+.popupTitle {
+    height: 100%;
+    flex-basis: 75%;
+}
+
+.navButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90%;
+    flex-basis: 10%
+}
+
+.githubButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90%;
+    flex-basis: 10%
+}
+
+button {
+    padding: 5px;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+/*Content stylings*/
+
+.popupContent {
+    grid-column: 1 / span 3;
+    grid-row: 2 / 5;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.popupFooter {
+    grid-column: 1 / span 3;
+    grid-row: 5;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}

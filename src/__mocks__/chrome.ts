@@ -1,4 +1,7 @@
-//Chrome API mocked calls
+/**
+ *  Chrome API mocked calls
+ * 
+ * */
 
 //Mock Chrome object
 global.chrome = {
@@ -6,6 +9,7 @@ global.chrome = {
 		query: jest.fn().mockImplementation(tabsQuery),
 		executeScript: jest.fn().mockImplementation(executeScript),
         insertCSS: jest.fn().mockImplementation(insertCSS),
+        sendMessage: jest.fn().mockImplementation(tabsSendMessage)
     },
 	action: {
 
@@ -13,7 +17,8 @@ global.chrome = {
     runtime: {
         onMessage: {
             addListener: jest.fn().mockImplementation(runtimeOnMessage)
-        }
+        },
+        sendMessage: jest.fn().mockImplementation(runtimeSendMessage)
     },
     webNavigation: {
         onCompleted:  {
@@ -37,6 +42,10 @@ function tabsQuery(){
 
 }
 
+async function tabsSendMessage(tabId, message):Promise<any>{
+    return
+}
+
 function executeScript(){
 
 }
@@ -57,6 +66,11 @@ function runtimeOnMessage(callback){
     //True if callback registered successfully
     return true
 
+}
+
+async function runtimeSendMessage(message): Promise<any>{
+
+    return
 }
 
 /* Web Navigation API */

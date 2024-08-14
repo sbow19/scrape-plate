@@ -1,0 +1,23 @@
+{
+    // "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "rootDir": ".", // Changes root directory for ts-jest
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      // "noEmit": true,
+      "jsx": "react-jsx",
+      "esModuleInterop": true,
+
+      "baseUrl": ".",
+    "paths": {
+      "#components/*": ["src/app/components/*"],
+      "#containers/*": ["src/app/containers/*"],
+      "#ducks/*": ["src/app/ducks/*"],
+      "#styles/*": ["src/app/styles/*"],
+      "#models/*": ["src/app/models/*"],
+      "#assets/*": ["src/assets/*"],
+      "@mock/*": ["src/__mocks__/*"]
+    }
+    }
+  }

@@ -4,6 +4,10 @@ import App from './App';
 import '#styles/global.module.css';  // Global style presets
 
 
+/* DEV STYLES __REMOVE IN PRODUCTION__ */
+import '#styles/dev.module.css';
+
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
