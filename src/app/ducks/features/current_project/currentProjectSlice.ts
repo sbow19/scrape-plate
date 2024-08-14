@@ -1,0 +1,3 @@
+/**
+ * Manage current project state
+ */
