@@ -6,6 +6,7 @@ import React from 'react';
 import * as styles from '#styles/popup.module.css';
 import WelcomeScreenContainer from '#containers/popup/views/welcome_screen_container';
 import CurrentProjectScreenContainer from '#containers/popup/views/current_project_screen_container';
+import AllProjectsScreenContainer from '#containers/popup/views/manage_projects_screen_container';
 
 const MainPopupView: React.FC<MainProps> = ({currentView}) => {
 
@@ -16,6 +17,7 @@ const MainPopupView: React.FC<MainProps> = ({currentView}) => {
 			ViewToRender = <WelcomeScreenContainer />;
             break;
 		case "all_projects":
+			ViewToRender = <AllProjectsScreenContainer/>
 			break
 		case "current_project":
 			ViewToRender = <CurrentProjectScreenContainer />;
