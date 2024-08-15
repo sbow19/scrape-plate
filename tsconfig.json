@@ -48,6 +48,5 @@
   ],
   "exclude":[
     "__tests__",
-    "assets/"
   ],
 }

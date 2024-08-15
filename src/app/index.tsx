@@ -10,6 +10,10 @@ import store from '#ducks/store/store';
 import '#styles/dev.module.css';
 
 
+/* DEV STYLES __REMOVE IN PRODUCTION__ */
+import '#styles/dev.module.css';
+
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
