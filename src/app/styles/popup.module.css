@@ -135,6 +135,23 @@ button {
 }
 
 /* Manage all projects*/
+
+.popupManageScreenHeader {
+    grid-column: 1 / span 3;
+    grid-row: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+.popupManageScreenHeadersInner {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center
+}
+
 .popupManageScreenContainer {
     grid-column: 1 / span 3;
     grid-row: 1 / 5;
@@ -148,9 +165,12 @@ button {
 .popupManageScreenContent {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 100px); 
-    justify-content: space-around;
-    padding: 0 10px;
+    grid-auto-rows: 70px; 
+    justify-content: space-evenly;
+    /* justify-items: center; */
+    padding: 10px 10px;
+    align-items: center;
+
     
 }
 
@@ -161,7 +181,8 @@ button {
     display: grid; 
     justify-content: space-around;
     padding: 0 10px;
-    bottom: 15px
+    bottom: 10px;
+    box-shadow: 0 0 10px black;
 }
 
 .popupFooter {

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import CurrentProjectScreen from '#components/popup/views/current_project_screen';
 import { projectsList, projectDetails } from '#mocks/dummyData';
+import { useAppDispatch } from 'app/utils/hooks';
+import { changeProject, changeProjectDetails } from '#ducks/features/current_project/currentProjectSlice';
 
 const CurrentProjectScreenContainer = (): JSX.Element => {
 	const [projectText, setProjectText] = useState('');
@@ -30,6 +32,30 @@ const CurrentProjectScreenContainer = (): JSX.Element => {
 		}
 	};
 
+	//Update current Project details based on selection
+	const dispatch = useAppDispatch();
+
+	const handleSelect:SelectHandler = (id, name, property)=>{
+
+		//Update current project details in Redux store and change content on current project view accordingly
+
+		switch(property){
+			case "project":
+				dispatch(changeProject({ id, name, property }));
+				break
+			case "session":
+				dispatch(changeProjectDetails({ id, name, property }));
+				break
+			case "schema":
+				dispatch(changeProjectDetails({ id, name, property }));
+				break
+			default: 
+				break
+		}
+		
+		
+	}
+
 	//Text handler package
 	const inputText = {
 		projectText: projectText,
@@ -44,6 +70,7 @@ const CurrentProjectScreenContainer = (): JSX.Element => {
 				currentProject={projectDetails}
                 inputText={inputText}
 				onChange={handleTextChange}
+				onSelect={handleSelect}
 			/>
 		</>
 	);

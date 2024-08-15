@@ -1,3 +1,4 @@
+
 export {};
 
 declare global {
@@ -42,16 +43,26 @@ declare global {
 		targetInputField: string,
 	) => void;
 
+	type SelectHandler = (
+		id: string,
+		name: string,
+		property: "project" | "session" | "schema"
+	) => void;
+
 	/**
 	 * Slice state
 	 *  */
+
+	//Navigation state
 	type NavigationState =
 		| { currentView: 'welcome'; viewParams: null }
 		| { currentView: 'current_project'; viewParams: CurrentProjectDetails }
 		| { currentView: 'schemas'; viewParams: null }
 		| { currentView: 'all_projects'; viewParams: AllProjects }
 		| { currentView: 'manage_project'; viewParams: ProjectDetails }
-		| { currentView: 'manage_session'; viewParams: ManageSessionParams };
+		| { currentView: 'manage_session'; viewParams: ManageSessionParams }
+		| { currentView: 'manage_schema'; viewParams: ManageSchemaParams }
+		| { currentView: 'add_project'; viewParams: null };
 
 	type Views =
 		| 'welcome'
@@ -59,10 +70,55 @@ declare global {
 		| 'schemas'
 		| 'all_projects'
 		| 'manage_project'
-		| 'manage_session';
+		| 'manage_session'
+		| "add_project"
+		| "manage_schema"
+
 	/* Views params */
 	type ManageSessionParams = {
-		noProperty: string;
+		sessionId: SessionId | null
+	};
+
+	type ManageSchemaParams = {
+		schemaId: SchemaId | null
+	}
+
+	//content containet state
+	type ContentContainerPrefillItem =
+		| {
+				currentView: 'schemas';
+				title: "Manage Schemas"
+				tableHeaders: ['Schema Name', 'Target URL', 'Options'];
+				tableRowData: Array<SchemaDetails>;
+				id: null
+		  }
+		| {
+				currentView: 'all_projects';
+				title: "Manage Projects"
+				tableHeaders: ['Project Name', 'Last Updated', 'Options'];
+				tableRowData: Array<ProjectDetails>;
+				id: null
+		  }
+		| {
+				currentView: 'manage_project';
+				title: "Manage Project"
+				tableHeaders: ['Session Name', 'Last Updated', 'Options'];
+				tableRowData: Array<SessionDetails>;
+				id: ProjectId
+		  }
+		| {
+				currentView: 'manage_session';
+				title: "Manage Session"
+				tableHeaders: ['Capture Name', 'Time Captured', 'Options'];
+				tableRowData: Array<>;
+				id: SessionId
+		  }
+
+	type ContentContainerPrefill = {
+		schemas: ContentContainerPrefillItem;
+		allProjects: ContentContainerPrefillItem;
+		manageProject: ContentContainerPrefillItem;
+		manageSession: ContentContainerPrefillItem;
 	};
 
 	/*
@@ -85,14 +141,32 @@ declare global {
 			schemaText: string;
 		};
 		onChange: InputChangeHandler;
+		onSelect: SelectHandler
 	}
 
 	//Manage projects Screen
 
 	//Main Footer props
 	interface MainFooterProps {
-		onManageProjectsClick: ()=>void //Change view redux function
+		onManageProjectsClick: () => void; //Change view redux function
 	}
 
+	//Content Container props
+	interface ContentContainerProps {
+		content: ContentContainerPrefillItem;
+	}
 
+	//Button Template Props 
+	interface ButtonTemplateProps {
+		children: JSX.Elements
+		onClick: () => void;
+	}
+
+	//View Details button 
+	interface ViewDetailsButton {
+		children: React.Node
+		id: ProjectId | SessionId | SchemaId | null
+		targetView: Views
+	}
+	
 }

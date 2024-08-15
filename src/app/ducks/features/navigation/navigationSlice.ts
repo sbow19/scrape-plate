@@ -13,13 +13,12 @@ export const navigationSlice = createSlice({
     initialState,
     reducers: {
         changeView: (state: NavigationState, action: PayloadAction<NavigationState>) => {
-            
             state.currentView = action.payload.currentView;
+
             /* If payload contains view params, then add those to state */
             if(action.payload?.viewParams){
                 state.viewParams = action.payload.viewParams;
             }
-            
         }
     }
 });

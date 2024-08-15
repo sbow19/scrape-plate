@@ -1,6 +1,5 @@
 import React from 'react';
 import * as styles from '#styles/popup.module.css';
-import MainFooterContainer from '#containers/popup/views/main_footer_container';
 
 const WelcomeScreen = (): JSX.Element => {
 	return (
@@ -20,7 +19,6 @@ const WelcomeScreen = (): JSX.Element => {
 				</p>
 			</div>
 			<button>Create your first project</button>
-			<MainFooterContainer/>
 		</article>
 	);
 };
