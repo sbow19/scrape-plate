@@ -1,13 +1,28 @@
 import React from 'react';
 import * as styles from '#styles/popup.module.css';
+
+/* Button components imports */
 import AddProjectButton from '#components/buttons/add_project_button';
 import EditSchemaButton from '#components/buttons/edit_schema_button';
+import DeleteSchemaButton from '#components/buttons/delete_schema_button';
 import ExportButton from '#components/buttons/export_button';
+import AddSchemaButton from '#components/buttons/add_schema_button';
 import SetCurrentProjectButton from '#components/buttons/set_current_project_button';
 import ViewDetailsButton from '#components/buttons/view_details_button';
+import DeleteProjectButton from '#components/buttons/delete_project_button';
+import DeleteSessionButton from '#components/buttons/delete_session_button';
 
 const ContentTemplate: React.FC<ContentContainerProps> = ({ content }) => {
-	const { currentView, title, tableHeaders, tableRowData, id } = content;
+	const { currentView, title, tableHeaders, tableRowData, id, names } = content;
+
+	let headerString: string;
+
+	if (names !== null) {
+		headerString =
+			typeof names === 'string' ? names : `${names[0]} \: ${names[1]}`;
+	} else {
+		headerString = '';
+	}
 
 	let ButtonToRender: JSX.Element = <></>;
 
@@ -17,7 +32,7 @@ const ContentTemplate: React.FC<ContentContainerProps> = ({ content }) => {
 				<EditSchemaButton
 					id={id}
 					currentView={currentView}
-
+					buttonStyle='main-button'
 				/>
 			);
 			break;
@@ -26,26 +41,66 @@ const ContentTemplate: React.FC<ContentContainerProps> = ({ content }) => {
 				<AddProjectButton
 					id={id}
 					currentView={currentView}
-					
+					buttonStyle='main-button'
 				/>
 			);
 			break;
 		case 'manage_project':
 			ButtonToRender = (
-				<ExportButton
-					id={id}
-					currentView={currentView}
-				/>
+				<div className={styles.popupManageScreenButtonWrapper}>
+					<ExportButton
+						id={id}
+						currentView={currentView}
+						buttonStyle='main-button-inside'
+					/>
+					<AddSchemaButton
+						id={id}
+						currentView={currentView}
+						buttonStyle='main-button-inside'
+					/>
+					<DeleteProjectButton
+						id={id}
+						currentView={currentView}
+						buttonStyle='main-button-inside'
+					/>
+				</div>
 			);
+
 			break;
 		case 'manage_session':
-		default:
 			ButtonToRender = (
-				<ExportButton
-					id={id}
-					currentView={currentView}
-				/>
+				<div className={styles.popupManageScreenButtonWrapper}>
+					<ExportButton
+						id={id}
+						currentView={currentView}
+						buttonStyle='main-button-inside'
+					/>
+					<DeleteSessionButton
+						id={id}
+						currentView={currentView}
+						buttonStyle='main-button-inside'
+					/>
+				</div>
 			);
+			break;
+		case 'manage_schema':
+			ButtonToRender = (
+				<div className={styles.popupManageScreenButtonWrapper}>
+					<EditSchemaButton
+						id={id}
+						currentView={currentView}
+						buttonStyle='main-button-inside'
+					/>
+					<DeleteSchemaButton
+						id={id}
+						currentView={currentView}
+						buttonStyle='main-button-inside'
+					/>
+				</div>
+			);
+			break;
+		default:
+			ButtonToRender = <></>;
 			break;
 	}
 
@@ -58,26 +113,33 @@ const ContentTemplate: React.FC<ContentContainerProps> = ({ content }) => {
 				return (
 					<>
 						<ViewDetailsButton
-							targetView='project'
+							targetView='manage_project'
 							id={id}
-						/>
+						>
+							View Details
+						</ViewDetailsButton>
 						<SetCurrentProjectButton id={id} />
 					</>
 				);
 			case 'manage_project':
 				return (
 					<ViewDetailsButton
-						targetView='session'
+						targetView='manage_session'
 						id={id}
-					/>
+					>
+						View Details
+					</ViewDetailsButton>
 				);
 			case 'manage_session':
 				return (
 					<ViewDetailsButton
 						targetView='capture'
 						id={id}
-					/>
+					>
+						View Details
+					</ViewDetailsButton>
 				);
+
 			default:
 				return <button>Export</button>;
 		}
@@ -87,6 +149,7 @@ const ContentTemplate: React.FC<ContentContainerProps> = ({ content }) => {
 		<article className={styles.popupManageScreenContainer}>
 			<div className={styles.popupManageScreenHeader}>
 				<h2>{title}</h2>
+				<h3>{headerString}</h3>
 				<div className={styles.popupManageScreenHeadersInner}>
 					<h3>{tableHeaders[0]} </h3>
 					<h3>{tableHeaders[1]}</h3>

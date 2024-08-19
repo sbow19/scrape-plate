@@ -1,5 +1,6 @@
 import React from 'react';
 import * as styles from '#styles/popup.module.css';
+import AddProjectButton from '#components/buttons/add_project_button';
 
 const WelcomeScreen = (): JSX.Element => {
 	return (
@@ -18,7 +19,7 @@ const WelcomeScreen = (): JSX.Element => {
 					your first scraping schema for your target webpage. Click the button below to start !
 				</p>
 			</div>
-			<button>Create your first project</button>
+			<AddProjectButton buttonStyle="button"/>
 		</article>
 	);
 };

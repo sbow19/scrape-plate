@@ -1,9 +1,13 @@
+/**
+ * Renders side panel, allowing user to edit schema using current page.
+ */
+
 import React from 'react';
 import ButtonTemplate from './button_template';
 import { useAppDispatch } from 'app/utils/hooks';
 import { changeView } from '#ducks/features/navigation/navigationSlice';
 
-const EditSchemaButton: React.FC = ({id, currentView})=>{
+const EditSchemaButton: React.FC = ({id, currentView, buttonStyle})=>{
 
     const dispatch = useAppDispatch()
 
@@ -14,7 +18,7 @@ const EditSchemaButton: React.FC = ({id, currentView})=>{
     }
 
     return(
-        <ButtonTemplate onClick={EditSchemaHandler} buttonStyle="main-content">Edit Schema</ButtonTemplate>
+        <ButtonTemplate onClick={EditSchemaHandler} buttonStyle={buttonStyle}>Edit Schema</ButtonTemplate>
     )
 }
 

@@ -58,6 +58,13 @@ button {
     font-weight: 600;
 }
 
+.button {
+    padding: 5px;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
 /*Content stylings*/
 
 .popupContent {
@@ -134,7 +141,88 @@ button {
 
 }
 
-/* Manage all projects*/
+/*Pop up add project screen*/
+.popupAddProjectScreen{
+    grid-column: 1 / span 3;
+    grid-row: 1 / 5;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: 1fr 5fr;
+    height: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+}
+
+.popupAddProjectHeader {
+    grid-column: 1 / span 3;
+    grid-row: 1;
+    text-align: center;
+}
+
+.popupAddProjectForm {
+    grid-column: 1 / span 3;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: 3fr 7fr;
+    grid-template-rows: 1fr 5fr 3fr;
+    margin-bottom: 10px
+
+}
+
+.addProjectTitle {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    margin: auto
+}
+
+.addProjectTitleInput {
+    margin-left: 20px;
+}
+
+.addProjectSchemas {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.addProjectSchemas > label {
+    margin-bottom: 10px
+}
+
+.addProjectSelectSessionsWrapper {
+    width: 90%;
+    margin: 10px;
+    padding: 10px;
+    background-color: white;
+    justify-self: center;
+}
+
+.addProjectSelectSchemaWrapper {
+    width: 90%;
+    margin: 10px;
+    padding: 10px;
+    background-color: white;
+    justify-self: center;
+}
+
+.addProjectAddButtonWrapper {
+    grid-column: 1 / span 2;
+    grid-row: 4;
+    justify-self: center;
+    position: absolute;
+    width: 40%;
+    margin-left: 10px;
+    bottom: -5px
+}
+
+
+/* Content Container stylings */
 
 .popupManageScreenHeader {
     grid-column: 1 / span 3;
@@ -183,6 +271,27 @@ button {
     padding: 0 10px;
     bottom: 10px;
     box-shadow: 0 0 10px black;
+}
+
+.popupManageScreenInsideButton {
+    justify-content: space-around;
+    padding: 0 10px;
+    box-shadow: 0 0 10px black;
+    position: relative;
+    
+}
+
+.popupManageScreenButtonWrapper {
+    grid-column: 1 / span 3;
+    grid-row: 5;
+    position: absolute;
+    display: flex; 
+    justify-content: space-around;
+    padding: 0 10px;
+    bottom: 10px;
+    width: 75%;
+    height: 80%;
+    background-color: none;
 }
 
 .popupFooter {

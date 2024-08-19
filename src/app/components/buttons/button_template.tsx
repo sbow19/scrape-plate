@@ -11,8 +11,14 @@ const ButtonTemplate: React.FC<ButtonTemplateProps> = ({
 
     // Apply styles based on buttonStyle prop
     switch(buttonStyle){
-        case "main-content":
+        case "main-button":
             style = styles.popupManageScreenButton
+			break
+		case "main-button-inside":
+			style = styles.popupManageScreenInsideButton
+			break
+		case "button":
+			style = styles.button
     }
 	return (
 		<button

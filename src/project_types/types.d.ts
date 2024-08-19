@@ -27,6 +27,8 @@ declare global {
 	type SessionDetails = {
 		name: SessionName;
 		id: SessionId;
+		projectId: ProjectId
+		projectName: ProjectName
 	};
 
 	type ProjectName = string;
@@ -35,6 +37,8 @@ declare global {
 	type SchemaDetails = {
 		name: SchemaName;
 		id: SchemaId;
+		url: string;
+		schema: Schema
 	};
 
 	/* Handler functions */
@@ -55,14 +59,18 @@ declare global {
 
 	//Navigation state
 	type NavigationState =
+		//Default views
 		| { currentView: 'welcome'; viewParams: null }
 		| { currentView: 'current_project'; viewParams: CurrentProjectDetails }
+
+		//Content container views
 		| { currentView: 'schemas'; viewParams: null }
 		| { currentView: 'all_projects'; viewParams: AllProjects }
 		| { currentView: 'manage_project'; viewParams: ProjectDetails }
 		| { currentView: 'manage_session'; viewParams: ManageSessionParams }
 		| { currentView: 'manage_schema'; viewParams: ManageSchemaParams }
-		| { currentView: 'add_project'; viewParams: null };
+		| { currentView: 'manage_capture'; viewParams: null }
+		| { currentView: 'add_project'; viewParams: null }
 
 	type Views =
 		| 'welcome'
@@ -71,8 +79,10 @@ declare global {
 		| 'all_projects'
 		| 'manage_project'
 		| 'manage_session'
+		| 'manage_capture'
 		| "add_project"
 		| "manage_schema"
+		| "add_schema"
 
 	/* Views params */
 	type ManageSessionParams = {
@@ -83,7 +93,8 @@ declare global {
 		schemaId: SchemaId | null
 	}
 
-	//content containet state
+	//content container state
+	/* Several container views follow a predefined template when a desired page is navigated into, we populate the template with the values below. Not all view follow this template. The template is in the Current Content Container Components  */
 	type ContentContainerPrefillItem =
 		| {
 				currentView: 'schemas';
@@ -91,13 +102,15 @@ declare global {
 				tableHeaders: ['Schema Name', 'Target URL', 'Options'];
 				tableRowData: Array<SchemaDetails>;
 				id: null
+				names: null
 		  }
 		| {
 				currentView: 'all_projects';
-				title: "Manage Projects"
+				title: "Manage All Projects"
 				tableHeaders: ['Project Name', 'Last Updated', 'Options'];
 				tableRowData: Array<ProjectDetails>;
 				id: null
+				names: null
 		  }
 		| {
 				currentView: 'manage_project';
@@ -105,6 +118,7 @@ declare global {
 				tableHeaders: ['Session Name', 'Last Updated', 'Options'];
 				tableRowData: Array<SessionDetails>;
 				id: ProjectId
+				names: ProjectName | null
 		  }
 		| {
 				currentView: 'manage_session';
@@ -112,14 +126,29 @@ declare global {
 				tableHeaders: ['Capture Name', 'Time Captured', 'Options'];
 				tableRowData: Array<>;
 				id: SessionId
+				names: [ProjectName, SessionName] | null
 		  }
+		| {
+			currentView: 'manage_schema';
+			title: "Manage Schema"
+			tableHeaders: ['Key', 'Value', 'Options'];
+			tableRowData: Array<>;
+			id: SessionId
+			names: [SchemaName, url] | null //Schema name and associated url
+	  }
 
 	type ContentContainerPrefill = {
 		schemas: ContentContainerPrefillItem;
 		allProjects: ContentContainerPrefillItem;
 		manageProject: ContentContainerPrefillItem;
 		manageSession: ContentContainerPrefillItem;
+		manageSchema: ContentContainerPrefillItem
 	};
+
+	//User schemas state
+
+	type SchemaList = Array<SchemaDetails>
+
 
 	/*
 		Component Props

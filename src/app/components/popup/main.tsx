@@ -7,6 +7,7 @@ import * as styles from '#styles/popup.module.css';
 import WelcomeScreenContainer from '#containers/popup/views/welcome_screen_container';
 import CurrentProjectScreenContainer from '#containers/popup/views/current_project_screen_container';
 import ContentTemplateContainer from '#containers/popup/views/content_template_container';
+import AddProjectContainer from '#containers/popup/views/add_project_container';
 
 const MainPopupView: React.FC<MainProps> = ({currentView}) => {
 
@@ -25,18 +26,18 @@ const MainPopupView: React.FC<MainProps> = ({currentView}) => {
 		case "manage_project":
 			ViewToRender = <ContentTemplateContainer/>;
 			break;
-		// case "create_project":
-		// 	ViewToRender = </>;
-		// 	break;
+		case "add_project":
+			ViewToRender = <AddProjectContainer />;
+			break;
 		case "manage_session":
 			ViewToRender = <ContentTemplateContainer/>;
 			break;
 		case "schemas":
 			ViewToRender = <ContentTemplateContainer/>;
 			break;
-		// case "manage_schema":
-		// 	ViewToRender = </>;
-		// 	break;
+		case "manage_schema":
+			ViewToRender = <ContentTemplateContainer/>;
+			break;
 		case "manage_capture":
 			ViewToRender = <ContentTemplateContainer/>;
             break;
