@@ -1,6 +1,8 @@
 import React from 'react';
 import * as styles from '#styles/popup.module.css'
 
+import openSidePanel from 'app/utils/chrome_helpers/open_side_panel';
+
 const MainFooter: React.FC<MainFooterProps> = ({onManageProjectsClick: handleManageProjectsClick}) => {
 	
 	return (
@@ -12,7 +14,7 @@ const MainFooter: React.FC<MainFooterProps> = ({onManageProjectsClick: handleMan
 				<button>Create Schema</button>
 			</div>
 			<div>
-				<button>Scrape</button>
+				<button onClick={openSidePanel}>Scrape</button>
 			</div>
 			<div>
 				<button onClick={handleManageProjectsClick}>Manage Projects</button>

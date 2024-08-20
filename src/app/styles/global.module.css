@@ -1,23 +1,30 @@
 /* global.css */
-html, body, main, #root {
-    margin: 0;
-    padding: 0;
-    font-family: 'Roboto', 'Source Sans Pro', arial; /* Set your desired global font */
-    box-sizing: border-box;
-    max-width: 600px;
-    max-height: 400px;
-    font-size: 16px;
-  }
-  
-  /* Apply border-box to all elements */
-  *,
-  *::before,
-  *::after {
-    box-sizing: inherit;
-    margin: 0;
-    padding: 0;
-  }
+html,
+body,
+main,
+#root {
+	margin: 0;
+	padding: 0;
+	font-family: 'Roboto', 'Source Sans Pro', arial; /* Set your desired global font */
+	box-sizing: border-box;
+	max-width: 600px;
+	max-height: 400px;
+	font-size: 16px;
+}
 
-  button:hover {
-    background-color: aquamarine;
+/* Apply border-box to all elements */
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+	margin: 0;
+	padding: 0;
+}
+
+button:hover {
+	background-color: aquamarine;
+}
+
+li {
+  list-style: none
 }

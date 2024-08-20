@@ -6,6 +6,7 @@ const ContentTemplateContainer: React.FC = () => {
 
     //Use current view to get correct template
     const contentContainerContent = useAppSelector((state)=>state.contentContainer)
+    
 
     return <ContentTemplate content={contentContainerContent}/>;
 

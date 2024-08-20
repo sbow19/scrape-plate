@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CurrentProjectScreen from '#components/popup/views/current_project_screen';
 import { projectsList, projectDetails } from '#mocks/dummyData';
-import { useAppDispatch } from 'app/utils/hooks';
+import { useAppDispatch, useAppSelector } from 'app/utils/hooks';
 import { changeProject, changeProjectDetails } from '#ducks/features/current_project/currentProjectSlice';
 
 const CurrentProjectScreenContainer = (): JSX.Element => {
@@ -9,11 +9,14 @@ const CurrentProjectScreenContainer = (): JSX.Element => {
 	const [sessionText, setSessionText] = useState('');
 	const [schemaText, setSchemaText] = useState('');
 
+	//Fetch current project details from state storage
+	const currentProject = useAppSelector(state=>state.currentProject);
+
 	//Populate text fields with current project data
 	useEffect(() => {
-		setProjectText(projectDetails?.name ?? '');
-		setSessionText(projectDetails.lastSession?.name ?? '');
-		setSchemaText(projectDetails.lastSchema?.name ?? '');
+		setProjectText(currentProject?.name ?? '');
+		setSessionText(currentProject.lastSession?.name ?? '');
+		setSchemaText(currentProject.lastSchema?.name ?? '');
 	}, []);
 
 	const handleTextChange: InputChangeHandler = (event, targetInputField) => {
@@ -36,12 +39,10 @@ const CurrentProjectScreenContainer = (): JSX.Element => {
 	const dispatch = useAppDispatch();
 
 	const handleSelect:SelectHandler = (id, name, property)=>{
-
 		//Update current project details in Redux store and change content on current project view accordingly
-
 		switch(property){
 			case "project":
-				dispatch(changeProject({ id, name, property }));
+				dispatch(changeProject(id));
 				break
 			case "session":
 				dispatch(changeProjectDetails({ id, name, property }));

@@ -9,7 +9,7 @@
         "default_popup": "build/index.html"
     },
     "background": {
-        "service_worker": "background/service_worker.js",
+        "service_worker": "ext/background/service_worker.js",
         "type": "module" 
     },
     "commands": {

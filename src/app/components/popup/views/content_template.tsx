@@ -162,10 +162,10 @@ const ContentTemplate: React.FC<ContentContainerProps> = ({ content }) => {
 					{tableRowData.length > 0 ? (
 						tableRowData.map((data) => {
 							return (
-								<div key={data.id}>
-									<h4>{data.name}</h4>
-									<div>{data.description}</div>
-									<div>{OptionsToRender(data.id)}</div>
+								<div className={styles.popupManageScreenContentRow} key={data.id}>
+									<h4 className={styles.popupColumnOne}>{data.name}</h4>
+									<div className={styles.popupColumnTwo}>{data.description}</div>
+									<div className={styles.popupColumnThree}>{OptionsToRender(data.id)}</div>
 								</div>
 							);
 						})

@@ -1,0 +1,2 @@
+chrome.tabs.on;
+export {};

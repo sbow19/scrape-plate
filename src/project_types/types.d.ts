@@ -7,7 +7,7 @@ declare global {
 		id: ProjectId | null;
 		lastSession: SessionDetails | null;
 		lastSchema: SchemaDetails | null;
-		lastModified: string | null;
+		
 	}
 
 	type ProjectDetails = {
@@ -15,6 +15,7 @@ declare global {
 		id: ProjectId;
 		sessionNames: Array<SessionDetails> | null;
 		projectSchemas: Array<SchemaDetails> | null;
+		lastModified: string | null;
 	};
 
 	type AllProjects = {
@@ -29,6 +30,7 @@ declare global {
 		id: SessionId;
 		projectId: ProjectId
 		projectName: ProjectName
+		lastModified: string | null;
 	};
 
 	type ProjectName = string;
@@ -60,17 +62,17 @@ declare global {
 	//Navigation state
 	type NavigationState =
 		//Default views
-		| { currentView: 'welcome'; viewParams: null }
-		| { currentView: 'current_project'; viewParams: CurrentProjectDetails }
+		| { currentView: 'welcome'; viewParams: {}; currentStack: NavigationStackArray }
+		| { currentView: 'current_project'; viewParams: CurrentProjectDetails; currentStack: NavigationStackArray }
 
 		//Content container views
-		| { currentView: 'schemas'; viewParams: null }
-		| { currentView: 'all_projects'; viewParams: AllProjects }
-		| { currentView: 'manage_project'; viewParams: ProjectDetails }
-		| { currentView: 'manage_session'; viewParams: ManageSessionParams }
-		| { currentView: 'manage_schema'; viewParams: ManageSchemaParams }
-		| { currentView: 'manage_capture'; viewParams: null }
-		| { currentView: 'add_project'; viewParams: null }
+		| { currentView: 'schemas'; viewParams: ManageAllSchemasParams; currentStack: NavigationStackArray }
+		| { currentView: 'all_projects'; viewParams: AllProjects; currentStack: NavigationStackArray  }
+		| { currentView: 'manage_project'; viewParams: ProjectDetails; currentStack: NavigationStackArray  }
+		| { currentView: 'manage_session'; viewParams: ManageSessionParams; currentStack: NavigationStackArray  }
+		| { currentView: 'manage_schema'; viewParams: ManageSchemaParams; currentStack: NavigationStackArray  }
+		| { currentView: 'manage_capture'; viewParams: {}; currentStack: NavigationStackArray  }
+		| { currentView: 'add_project'; viewParams: {}; currentStack: NavigationStackArray  }
 
 	type Views =
 		| 'welcome'
@@ -92,6 +94,12 @@ declare global {
 	type ManageSchemaParams = {
 		schemaId: SchemaId | null
 	}
+
+	type ManageAllSchemasParams = {
+		schemaList: SchemaList
+	}
+
+	type NavigationStackArray = Array<NavigationState>
 
 	//content container state
 	/* Several container views follow a predefined template when a desired page is navigated into, we populate the template with the values below. Not all view follow this template. The template is in the Current Content Container Components  */
@@ -198,4 +206,25 @@ declare global {
 		targetView: Views
 	}
 	
+	//Add Project View props 
+	interface AddProjectViewProps {
+		userSchemas: SchemaList,
+		sessionList: Array<string>,
+		onSessionAdd: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>void,
+		sessionName: string,
+		onSessionNameChange: React.Dispatch<React.SetStateAction<string>>
+		onSessionDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sessionName: SessionName)=>void
+
+		schemaList: Array<SchemaName>
+		onSchemaAdd: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>void
+		onSchemaSelect: ChangeEventHandler<HTMLSelectElement>
+		onSchemaDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, schemaName: SchemaName)=>void
+		
+	}
+
+	interface MainProps {
+		currentView: Views
+		navigationStack: NavigationStackArray
+		onBack: ()=>void
+	}
 }
