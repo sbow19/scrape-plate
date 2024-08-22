@@ -31,6 +31,11 @@ export const createSchemaListObject = (
 	userSchemas: SchemaList,
 ): SchemaList => {
 
+	//If no schemas chosen, then just return an empty object
+	if(Object.keys(chosenSchemaList).length === 0){
+		return {}
+	}
+
     const schemas: SchemaList = {};
 
 	const chosenSchemaKeys = Object.keys(chosenSchemaList);

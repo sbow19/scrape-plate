@@ -304,11 +304,13 @@ declare global {
 		update_database: {
 			store: StoreName
 			data: StoreUpdateData
-		}
+		};
+		fetch_all_projects: null
+		fetch_all_schemas: null
 	};
 
 	type StoreRemoveData = {
-		dataType: 'project' | 'session' | 'project_schema' | "session_schema" | 'capture'; //Select the actual data to remove from store
+		dataType: 'project' | 'session' | 'project_schema' | "session_schema" | "schema" | 'capture'; //Select the actual data to remove from store
 		mainId: ProjectId | SchemaId; //Store item id
 		secondaryId?: SessionId | SchemaId; //If we are removing a specific session or schema from a project, then we need to provide the project id > session or schema id
 		tertiaryId?: CaptureId | SchemaId; //If we are removing a specific capture or schema from a session, then we need to provide te projectId > session id > capture/schema id
@@ -332,7 +334,9 @@ declare global {
 		};
 		update_database: {
 			success: boolean
-		}
+		};
+		fetch_all_projects: ProjectsList
+		fetch_all_schemas: SchemaList
 	}
 
 	/* Indexed DB */

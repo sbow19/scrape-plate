@@ -2,41 +2,36 @@
  * Manage schemas from storage
  * */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { fetchAllSchemas, addSchema, removeSchema } from "./schemaSliceThunks";
 
-// MOCK DATA
-import { mockProjectSchemas } from "#mocks/dummyData";
 
-const initialState: SchemaList = mockProjectSchemas;
+const initialState: SchemaList = {};
 
 export const schemasSlice = createSlice({
     name: "schemas",
     initialState,
     reducers: {
-        updateSchemas: (state: SchemaList, action: PayloadAction<SchemaDetails>) => {
 
-            //Add thunk to make sure Indexed db state is updated first
-
-            //Replace schema in schema list with new schema details, 
-            //otherwise append to current stat
-            for(let i = 0; i < state.length ; i++ ){
-                if(state[i].id === action.payload.id){
-                    state[i] = action.payload;
-                    return state;
-                }
-            }
-
-            state.push(action.payload);
-            return state
-        },
-        fetchSchemas: (state: SchemaList, action: PayloadAction<SchemaList>) =>{
-            
-            //Add thunk here to retrieve schemas from Indexed DB
+    },
+    extraReducers: (builder)=>{
+        //Fetch all schemas
+        builder.addCase(fetchAllSchemas.fulfilled, (state, action)=>{
             state = action.payload;
-            return
-        }
+            return state
+        })
+        
+        //Add a new schema
+        builder.addCase(addSchema.fulfilled, (state, action)=>{
+            //Add new schema to schema list if  successful
+            state[action.payload.id] = action.payload;
+        })
+
+        //Remove a schema
+        builder.addCase(removeSchema.fulfilled, (state, action)=>{
+            //Remove schema if successful
+            delete state[action.payload];
+        })
     }
 });
-
-export const { updateSchemas, fetchSchemas } = schemasSlice.actions;
 
 export default schemasSlice.reducer;

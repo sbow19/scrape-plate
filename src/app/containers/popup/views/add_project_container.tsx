@@ -5,6 +5,7 @@
 import React, { useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'app/utils/hooks';
+import { addProject } from '#ducks/features/projects/projectSliceThunks';
 import AddProject from '#components/popup/views/add_project';
 
 import {
@@ -16,7 +17,7 @@ import {
 const AddProjectContainer: React.FC = () => {
 
 	const dispatch = useAppDispatch(); 
-	
+
 	//Project  name state
 	const [projectName, setProjectName] = useState('');
 
@@ -49,7 +50,7 @@ const AddProjectContainer: React.FC = () => {
 	const [schemaList, setSchemaList] = useState<SchemaList>({});
 
 	//Schema current value
-	const [schemaSelection, setSchemaSelection] = useState<SchemaDetails>({});
+	const [schemaSelection, setSchemaSelection] = useState<SchemaDetails | null>(null);
 
 	//Session list handler
 	const schemaAddHandler = (
@@ -57,6 +58,11 @@ const AddProjectContainer: React.FC = () => {
 	) => {
 		//Prevent default behaviour
 		e.preventDefault();
+
+		//If no schema selected, don't do anything
+		if(!schemaSelection){
+			return
+		}
 
 		//Add schema name to on screen list
 		setSchemaList((prevSchemaList) => {
@@ -122,7 +128,7 @@ const AddProjectContainer: React.FC = () => {
 			lastModified: new Date().toISOString(),
 		};
 
-		//Dispatch action to add project to state
+		//Dispatch action to add project to project list
         dispatch(addProject(newProject));
 	};
 

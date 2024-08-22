@@ -11,14 +11,14 @@ import getRenderContext from './utils/chrome_helpers/render_context';
 /* DEV STYLES __REMOVE IN PRODUCTION__ */
 import '#styles/dev.module.css';
 
-let renderContext: string = 'side_panel';
+let renderContext: string = 'popup'
 /* Check render context */
 
-// try {
-// 	renderContext = await getRenderContext();
-// } catch (e) {
-// 	throw new Error('Could not get render context');
-// }
+try {
+	renderContext = await getRenderContext();
+} catch (e) {
+	throw new Error('Could not get render context');
+}
 
 console.log(renderContext)
 

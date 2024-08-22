@@ -1,4 +1,4 @@
-import { openDB, deleteDB, wrap, unwrap, IDBPDatabase } from 'idb';
+import { openDB, IDBPDatabase } from 'idb';
 
 class IndexedDBWrapper {
 	constructor() {}
@@ -40,7 +40,7 @@ class IndexedDBWrapper {
 
 					
 					//Initiate stores
-					for (let uncreatedStore of uncreatedObjectStores) {
+					for (const uncreatedStore of uncreatedObjectStores) {
 						switch (uncreatedStore) {
 							case 'current_project':
 								//Only one key value pair exists in this object store
@@ -116,8 +116,8 @@ class IndexedDBWrapper {
 					//Remove session from project details
 					delete project.sessionNames[storeItem.secondaryId];
 
-					//Save updated project object to store
-					await transaction.store.put(storeItem.mainId, project);
+					//Replace updated project object to store
+					await transaction.store.put(project, storeItem.mainId);
 		
 
 				}else if (storeItem.dataType === "project_schema"){
@@ -128,8 +128,8 @@ class IndexedDBWrapper {
 					//Remove schema from project details
 					delete project.projectSchemas[storeItem.secondaryId];
 
-					//Save updated project object to store
-					await transaction.store.put(storeItem.mainId, project);
+					//Replace updated project object to store
+					await transaction.store.put(project, storeItem.mainId);
 
 				}else if (storeItem.dataType === "session_schema"){
 
@@ -140,7 +140,7 @@ class IndexedDBWrapper {
 					delete project.sessionNames[storeItem.secondaryId][storeItem.tertiaryId];
 
 					//Save updated project object to store
-					await transaction.store.put(storeItem.mainId, project);
+					await transaction.store.put(project, storeItem.mainId);
 
 
 				} 
@@ -153,7 +153,7 @@ class IndexedDBWrapper {
 					delete project.sessionNames[storeItem.secondaryId][storeItem.tertiaryId];
 
 					//Save updated project object to store
-					await transaction.store.put(storeItem.mainId, project);
+					await transaction.store.put(project, storeItem.mainId);
 
 				}
 

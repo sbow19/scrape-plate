@@ -23,14 +23,18 @@ chrome.runtime.onMessage.addListener(
 );
 
 chrome.runtime.onMessage.addListener(
-	(message: ServiceWorkerMessage<'open_side_panel'>, sender) => {
+	(message: ServiceWorkerMessage<'open_side_panel'>) => {
 		if (message.action === 'open_side_panel') {
 			renderContext = 'side_panel';
 
 			chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
 				const tabId = tab.id;
 
-				chrome.sidePanel.open({ tabId });
+				if(!tabId){
+					return 
+				}
+
+				chrome.sidePanel.open({tabId: tabId});
 			});
 		}
 	},
@@ -48,7 +52,7 @@ chrome.runtime.onInstalled.addListener(async ()=>{
 
 	const result = await IndexedDBWrapper.createStoreInDB();
 
-	console.log(result, "listener level")
+	console.log(result)
 
 });
 
