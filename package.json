@@ -24,7 +24,9 @@
 	},
 	"scripts": {
 		"start": "webpack serve --config webpack/webpack.config.js --env env=dev --open",
-		"build-ext": "webpack --config webpack/webpack.config.js --env env=prod",
+		"build-ext": "npm run build-main && npm run build-background",
+		"build-main": "webpack --config webpack/webpack.config.js --env env=prod",
+		"build-background": "webpack --config src/ext/background/webpack/webpack.background.config.js",
 		"build-tsc": "tsc",
 		"test": "jest"
 	},

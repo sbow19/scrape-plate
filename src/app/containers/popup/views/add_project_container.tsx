@@ -4,10 +4,22 @@
 
 import React, { useState } from 'react';
 
-import { useAppSelector } from 'app/utils/hooks';
+import { useAppSelector, useAppDispatch } from 'app/utils/hooks';
 import AddProject from '#components/popup/views/add_project';
 
+import {
+	generateId,
+	createEmptySessions,
+	createSchemaListObject,
+} from 'app/utils/helper_funcs';
+
 const AddProjectContainer: React.FC = () => {
+
+	const dispatch = useAppDispatch(); 
+	
+	//Project  name state
+	const [projectName, setProjectName] = useState('');
+
 	//Session list state
 	const [sessionList, setSessionList] = useState<Array<string>>([]);
 
@@ -15,106 +27,119 @@ const AddProjectContainer: React.FC = () => {
 	const [sessionName, setSessionName] = useState<string>('');
 
 	//Session list handler
-	const sessionAddHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const sessionAddHandler = (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+	) => {
+		//Prevent default behaviour
+		e.preventDefault();
 
-        //Prevent default behaviour
-        e.preventDefault();
+		//If no text, don't do anything
+		if (sessionName.trim() === '') {
+			return;
+		}
 
-        //If no text, don't do anything
-        if(sessionName.trim() === ""){
-            return
-        }
-
-        //Add session name to on screen list
+		//Add session name to on screen list
 		setSessionList([...sessionList, sessionName]);
 
-        //reset input
-        setSessionName("");
+		//reset input
+		setSessionName('');
 	};
 
-    //Schema list state
-	const [schemaList, setSchemaList] = useState<Array<string>>([]);
+	//Schema list state
+	const [schemaList, setSchemaList] = useState<SchemaList>({});
 
-
-    //Schema current value
-    const [ schemaSelection, setSchemaSelection ] = useState<string>("");
+	//Schema current value
+	const [schemaSelection, setSchemaSelection] = useState<SchemaDetails>({});
 
 	//Session list handler
-	const schemaAddHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const schemaAddHandler = (
+		e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => {
+		//Prevent default behaviour
+		e.preventDefault();
 
-        //Prevent default behaviour
-        e.preventDefault();
+		//Add schema name to on screen list
+		setSchemaList((prevSchemaList) => {
 
-        //If no text, don't do anything
-        if(schemaSelection.trim() === ""){
-            return
-        }
+            const chosenKeys = Object.keys(prevSchemaList);
 
-        //Add schema name to on screen list
-		setSchemaList(prevSchemaList=>{
-
-            
-
-            //Check if schema already in list
-            if(prevSchemaList.some(schema=> schemaSelection === schema)){
-                return prevSchemaList
-            } else {
-                return [...prevSchemaList, schemaSelection]
-            }
-
-        });
+			//Check if schema already in list
+			if (chosenKeys.some((schemaId) => schemaSelection.id === schemaId)) {
+				return prevSchemaList;
+			} else {
+				return {...prevSchemaList, newSchemaId: userSchemas[schemaSelection.id]};
+			}
+		});
 	};
 
-    const handleSchemaSelect = (schemaName: string)=>{
+	const handleSchemaSelect = (schemaDetails: SchemaDetails) => {
+		setSchemaSelection(schemaDetails);
+	};
 
-        setSchemaSelection(schemaName);
-    }
+	//Delete items
+	const handleSchemaDelete = (
+		e: React.MouseEvent<HTMLButtonElement>,
+		schemaId: SchemaId,
+	) => {
+		e.preventDefault();
 
-    //Delete items
-    const handleSchemaDelete = (e: React.MouseEvent<HTMLButtonElement>, schemaName: string)=>{
+		setSchemaList((prevSchemaList) => {
+			//Filter selected item
+			delete prevSchemaList[schemaId];
 
+			return {...prevSchemaList};
+		});
+	};
 
-        e.preventDefault();
+	const handleSessionDelete = (
+		e: React.MouseEvent<HTMLButtonElement>,
+		sessionName: string,
+	) => {
+		e.preventDefault();
 
-        setSchemaList(prevSchemaList =>{
-
-            //Filter selected item
-            const newSchemaList = prevSchemaList.filter(schema=> schema !== schemaName)
-            return newSchemaList
-
-        })
-    }
-
-    const handleSessionDelete = (e: React.MouseEvent<HTMLButtonElement>, sessionName: string)=>{
-
-        e.preventDefault();
-
-        setSessionList(prevSessionList =>{
-
-            //Filter selected item
-            const newSessionList = prevSessionList.filter(session=> session !== sessionName)
-            return newSessionList
-
-        })
-    }
-
+		setSessionList((prevSessionList) => {
+			//Filter selected item
+			const newSessionList = prevSessionList.filter(
+				(session) => session !== sessionName,
+			);
+			return newSessionList;
+		});
+	};
 
 	// Fetch schemas
 	const userSchemas = useAppSelector((state) => state.schemas);
+
+	//Add project handler
+	const handleAddProject = () => {
+		const newProjectId = generateId();
+
+		//New Project details object
+		const newProject: ProjectDetails = {
+			name: projectName,
+			id: newProjectId,
+			sessionNames: createEmptySessions(sessionList, newProjectId, projectName),
+			projectSchemas: createSchemaListObject(schemaList, userSchemas),
+			lastModified: new Date().toISOString(),
+		};
+
+		//Dispatch action to add project to state
+        dispatch(addProject(newProject));
+	};
 
 	return (
 		<AddProject
 			userSchemas={userSchemas}
 			sessionList={sessionList}
+			onProjectNameChange={setProjectName}
 			onSessionAdd={sessionAddHandler}
-            sessionName={sessionName}
-            onSessionNameChange={setSessionName}
-            onSessionDelete={handleSessionDelete}
-
-            schemaList={schemaList}
-            onSchemaAdd={schemaAddHandler}
-            onSchemaSelect={handleSchemaSelect}
-            onSchemaDelete={handleSchemaDelete}
+			sessionName={sessionName}
+			onSessionNameChange={setSessionName}
+			onSessionDelete={handleSessionDelete}
+			schemaList={schemaList}
+			onSchemaAdd={schemaAddHandler}
+			onSchemaSelect={handleSchemaSelect}
+			onSchemaDelete={handleSchemaDelete}
+			onAddProject={handleAddProject}
 		/>
 	);
 };

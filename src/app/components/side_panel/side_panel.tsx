@@ -25,12 +25,4 @@ const SidePanelView = (/* Stateful props */) => {
 	);
 };
 
-
-
-
-
-
-
-//Schema editor
-
 export default SidePanelView;

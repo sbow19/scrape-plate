@@ -3,18 +3,12 @@ import ButtonTemplate from './button_template';
 // import { useAppDispatch } from 'app/utils/hooks';
 // import { changeView } from '#ducks/features/navigation/navigationSlice';
 
-const CreateProjectButton: React.FC = ({id, currentView, buttonStyle})=>{
+const CreateProjectButton: React.FC<CreateProjectButtonProps> = ({buttonStyle, onClick})=>{
 
     // const dispatch = useAppDispatch()
 
-    // Create Project button click event handler goes here
-    const CreateHandler = ()=>{
-        // Create project logic here
-        
-    }
-
     return(
-        <ButtonTemplate onClick={CreateHandler} buttonStyle={buttonStyle}>Add Project</ButtonTemplate>
+        <ButtonTemplate buttonStyle={buttonStyle} onClick={onClick}>Add Project</ButtonTemplate>
     )
 }
 

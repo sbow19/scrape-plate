@@ -29,7 +29,8 @@
         "activeTab",
         "downloads",
         "scripting",
-        "notifications"
+        "notifications",
+        "storage"
     ],
     "options_page": "build/index.html",
     "side_panel": {

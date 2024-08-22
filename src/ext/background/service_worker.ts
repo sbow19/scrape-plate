@@ -1,4 +1,4 @@
-import "./message_listeners/message_listeners.js";
+import "./message_listeners/message_listeners";
 
 
 export {};

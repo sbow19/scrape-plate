@@ -10,6 +10,7 @@ import CreateProjectButton from '#components/buttons/create_project_button';
 const AddProject: React.FC<AddProjectViewProps> = ({
 	userSchemas,
 	sessionList,
+	onProjectNameChange: handleProjectNameChange,
 	onSessionAdd: handleAddSession,
 	sessionName,
 	onSessionNameChange: handleSessionNameChange,
@@ -19,7 +20,15 @@ const AddProject: React.FC<AddProjectViewProps> = ({
 	onSchemaAdd: handleAddSchema,
 	onSchemaSelect: handleSchemaSelect,
 	onSchemaDelete: handleSchemaDelete,
+
+	onAddProject: handleAddProject
 }) => {
+
+
+
+	const chosenSchemaKeys = Object.keys(schemaList);
+	const allSchemaKeys = Object.keys(userSchemas);
+
 	return (
 		<div className={styles.popupAddProjectScreen}>
 			<h2 className={styles.popupAddProjectHeader}>Add Project</h2>
@@ -31,6 +40,9 @@ const AddProject: React.FC<AddProjectViewProps> = ({
 					<input
 						type='text'
 						placeholder='Project Name'
+						onChange={(e)=>{
+							handleProjectNameChange(e.target.value);
+						}}
 					/>
 				</div>
 
@@ -48,13 +60,13 @@ const AddProject: React.FC<AddProjectViewProps> = ({
 						>
 							Select a schema...
 						</option>
-						{userSchemas.map((schema) => {
+						{allSchemaKeys.map((schemaId) => {
 							return (
 								<option
-									key={schema.id}
-									value={schema.name}
+									key={schemaId}
+									value={userSchemas[schemaId].name}
 								>
-									{schema.name}
+									{userSchemas[schemaId].name}
 								</option>
 							);
 						})}
@@ -65,14 +77,14 @@ const AddProject: React.FC<AddProjectViewProps> = ({
 					<ul>
 						{/* Selected options go here */}
 
-						{schemaList.map((schemaName, index) => {
+						{chosenSchemaKeys.map((schemaId, index) => {
 							return (
 								<li
 									key={index}
-									value={schemaName}
+									value={userSchemas[schemaId].name}
 								>
-									{schemaName}
-									<button onClick={(e) => handleSchemaDelete(e, schemaName)}>
+									{userSchemas[schemaId].name}
+									<button onClick={(e) => handleSchemaDelete(e, schemaId)}>
 										Remove
 									</button>
 								</li>
@@ -119,7 +131,7 @@ const AddProject: React.FC<AddProjectViewProps> = ({
 				</div>
 
 				<div className={styles.addProjectAddButtonWrapper}>
-					<CreateProjectButton buttonStyle='main-button' />
+					<CreateProjectButton buttonStyle='main-button' onClick={handleAddProject} />
 				</div>
 			</form>
 		</div>

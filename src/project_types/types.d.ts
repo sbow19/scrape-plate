@@ -1,4 +1,3 @@
-
 export {};
 
 declare global {
@@ -7,20 +6,21 @@ declare global {
 		id: ProjectId | null;
 		lastSession: SessionDetails | null;
 		lastSchema: SchemaDetails | null;
-		
 	}
 
 	type ProjectDetails = {
 		name: ProjectName;
 		id: ProjectId;
-		sessionNames: Array<SessionDetails> | null;
-		projectSchemas: Array<SchemaDetails> | null;
+		sessionNames: {[sessionId: SessionId]: SessionDetails} | null;
+		projectSchemas: {[schemaId: SchemaId]: SchemaDetails} | null;
 		lastModified: string | null;
 	};
 
-	type AllProjects = {
-		projectsList: Array<ProjectDetails>;
-	};
+	type AllProjects = ProjectsList
+
+	type ProjectsList = {[id: ProjectId]: ProjectDetails}
+
+	type SessionList = {[sessionId: SessionId]: SessionDetails}
 
 	type SchemaId = string;
 	type SessionId = string;
@@ -28,8 +28,10 @@ declare global {
 	type SessionDetails = {
 		name: SessionName;
 		id: SessionId;
-		projectId: ProjectId
-		projectName: ProjectName
+		projectId: ProjectId;
+		projectName: ProjectName;
+		sessionSchemas: {[schemaId: SchemaId]: SchemaDetails} | null;
+		captures: {[captureId: CaptureId]: CaptureDetails} | null
 		lastModified: string | null;
 	};
 
@@ -40,7 +42,7 @@ declare global {
 		name: SchemaName;
 		id: SchemaId;
 		url: string;
-		schema: Schema
+		schema: Schema;
 	};
 
 	/* Handler functions */
@@ -52,7 +54,7 @@ declare global {
 	type SelectHandler = (
 		id: string,
 		name: string,
-		property: "project" | "session" | "schema"
+		property: 'project' | 'session' | 'schema',
 	) => void;
 
 	/**
@@ -62,17 +64,53 @@ declare global {
 	//Navigation state
 	type NavigationState =
 		//Default views
-		| { currentView: 'welcome'; viewParams: {}; currentStack: NavigationStackArray }
-		| { currentView: 'current_project'; viewParams: CurrentProjectDetails; currentStack: NavigationStackArray }
+		| {
+				currentView: 'welcome';
+				viewParams: {};
+				currentStack: NavigationStackArray;
+		  }
+		| {
+				currentView: 'current_project';
+				viewParams: CurrentProjectDetails;
+				currentStack: NavigationStackArray;
+		  }
 
 		//Content container views
-		| { currentView: 'schemas'; viewParams: ManageAllSchemasParams; currentStack: NavigationStackArray }
-		| { currentView: 'all_projects'; viewParams: AllProjects; currentStack: NavigationStackArray  }
-		| { currentView: 'manage_project'; viewParams: ProjectDetails; currentStack: NavigationStackArray  }
-		| { currentView: 'manage_session'; viewParams: ManageSessionParams; currentStack: NavigationStackArray  }
-		| { currentView: 'manage_schema'; viewParams: ManageSchemaParams; currentStack: NavigationStackArray  }
-		| { currentView: 'manage_capture'; viewParams: {}; currentStack: NavigationStackArray  }
-		| { currentView: 'add_project'; viewParams: {}; currentStack: NavigationStackArray  }
+		| {
+				currentView: 'schemas';
+				viewParams: ManageAllSchemasParams;
+				currentStack: NavigationStackArray;
+		  }
+		| {
+				currentView: 'all_projects';
+				viewParams: AllProjects;
+				currentStack: NavigationStackArray;
+		  }
+		| {
+				currentView: 'manage_project';
+				viewParams: ProjectDetails;
+				currentStack: NavigationStackArray;
+		  }
+		| {
+				currentView: 'manage_session';
+				viewParams: ManageSessionParams;
+				currentStack: NavigationStackArray;
+		  }
+		| {
+				currentView: 'manage_schema';
+				viewParams: ManageSchemaParams;
+				currentStack: NavigationStackArray;
+		  }
+		| {
+				currentView: 'manage_capture';
+				viewParams: {};
+				currentStack: NavigationStackArray;
+		  }
+		| {
+				currentView: 'add_project';
+				viewParams: {};
+				currentStack: NavigationStackArray;
+		  };
 
 	type Views =
 		| 'welcome'
@@ -82,81 +120,80 @@ declare global {
 		| 'manage_project'
 		| 'manage_session'
 		| 'manage_capture'
-		| "add_project"
-		| "manage_schema"
-		| "add_schema"
+		| 'add_project'
+		| 'manage_schema'
+		| 'add_schema';
 
 	/* Views params */
 	type ManageSessionParams = {
-		sessionId: SessionId | null
+		sessionId: SessionId | null;
 	};
 
 	type ManageSchemaParams = {
-		schemaId: SchemaId | null
-	}
+		schemaId: SchemaId | null;
+	};
 
 	type ManageAllSchemasParams = {
-		schemaList: SchemaList
-	}
+		schemaList: SchemaList;
+	};
 
-	type NavigationStackArray = Array<NavigationState>
+	type NavigationStackArray = Array<NavigationState>;
 
 	//content container state
 	/* Several container views follow a predefined template when a desired page is navigated into, we populate the template with the values below. Not all view follow this template. The template is in the Current Content Container Components  */
 	type ContentContainerPrefillItem =
 		| {
 				currentView: 'schemas';
-				title: "Manage Schemas"
+				title: 'Manage Schemas';
 				tableHeaders: ['Schema Name', 'Target URL', 'Options'];
 				tableRowData: Array<SchemaDetails>;
-				id: null
-				names: null
+				id: null;
+				names: null;
 		  }
 		| {
 				currentView: 'all_projects';
-				title: "Manage All Projects"
+				title: 'Manage All Projects';
 				tableHeaders: ['Project Name', 'Last Updated', 'Options'];
 				tableRowData: Array<ProjectDetails>;
-				id: null
-				names: null
+				id: null;
+				names: null;
 		  }
 		| {
 				currentView: 'manage_project';
-				title: "Manage Project"
+				title: 'Manage Project';
 				tableHeaders: ['Session Name', 'Last Updated', 'Options'];
 				tableRowData: Array<SessionDetails>;
-				id: ProjectId
-				names: ProjectName | null
+				id: ProjectId;
+				names: ProjectName | null;
 		  }
 		| {
 				currentView: 'manage_session';
-				title: "Manage Session"
+				title: 'Manage Session';
 				tableHeaders: ['Capture Name', 'Time Captured', 'Options'];
 				tableRowData: Array<>;
-				id: SessionId
-				names: [ProjectName, SessionName] | null
+				id: SessionId;
+				names: [ProjectName, SessionName] | null;
 		  }
 		| {
-			currentView: 'manage_schema';
-			title: "Manage Schema"
-			tableHeaders: ['Key', 'Value', 'Options'];
-			tableRowData: Array<>;
-			id: SessionId
-			names: [SchemaName, url] | null //Schema name and associated url
-	  }
+				currentView: 'manage_schema';
+				title: 'Manage Schema';
+				tableHeaders: ['Key', 'Value', 'Options'];
+				tableRowData: Array<>;
+				id: SessionId;
+				names: [SchemaName, url] | null; //Schema name and associated url
+		  };
 
 	type ContentContainerPrefill = {
 		schemas: ContentContainerPrefillItem;
 		allProjects: ContentContainerPrefillItem;
 		manageProject: ContentContainerPrefillItem;
 		manageSession: ContentContainerPrefillItem;
-		manageSchema: ContentContainerPrefillItem
+		manageSchema: ContentContainerPrefillItem;
 	};
 
 	//User schemas state
 
-	type SchemaList = Array<SchemaDetails>
-
+	type SchemaList = {[schemaId: SchemaId]: SchemaDetails};
 
 	/*
 		Component Props
@@ -178,7 +215,7 @@ declare global {
 			schemaText: string;
 		};
 		onChange: InputChangeHandler;
-		onSelect: SelectHandler
+		onSelect: SelectHandler;
 	}
 
 	//Manage projects Screen
@@ -193,57 +230,126 @@ declare global {
 		content: ContentContainerPrefillItem;
 	}
 
-	//Button Template Props 
+	//Create project button props
+	interface CreateProjectButtonProps {
+		onClick: ()=>void
+		buttonStyle: "main-button"
+	}
+
+	//Button Template Props
 	interface ButtonTemplateProps {
-		children: JSX.Elements
+		children: JSX.Elements;
 		onClick: () => void;
 	}
 
-	//View Details button 
+	//View Details button
 	interface ViewDetailsButton {
-		children: React.Node
-		id: ProjectId | SessionId | SchemaId | null
-		targetView: Views
+		children: React.Node;
+		id: ProjectId | SessionId | SchemaId | null;
+		targetView: Views;
 	}
-	
-	//Add Project View props 
-	interface AddProjectViewProps {
-		userSchemas: SchemaList,
-		sessionList: Array<string>,
-		onSessionAdd: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>void,
-		sessionName: string,
-		onSessionNameChange: React.Dispatch<React.SetStateAction<string>>
-		onSessionDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sessionName: SessionName)=>void
 
-		schemaList: Array<SchemaName>
-		onSchemaAdd: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>)=>void
-		onSchemaSelect: ChangeEventHandler<HTMLSelectElement>
-		onSchemaDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, schemaName: SchemaName)=>void
-		
+	//Add Project View props
+	interface AddProjectViewProps {
+		userSchemas: SchemaList;
+		sessionList: Array<string>;
+		onProjectNameChange: (string: string)=>void
+		onSessionAdd: (
+			event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		) => void;
+		sessionName: string;
+		onSessionNameChange: React.Dispatch<React.SetStateAction<string>>;
+		onSessionDelete: (
+			event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+			sessionName: SessionName,
+		) => void;
+
+		schemaList: SchemaLists;
+		onSchemaAdd: (
+			event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		) => void;
+		onSchemaSelect: ChangeEventHandler<HTMLSelectElement>;
+		onSchemaDelete: (
+			event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+			schemaName: SchemaName,
+		) => void;
+
+		onAddProject: ()=>void
 	}
 
 	interface MainProps {
-		currentView: Views
-		navigationStack: NavigationStackArray
-		onBack: ()=>void
+		currentView: Views;
+		navigationStack: NavigationStackArray;
+		onBack: () => void;
 	}
 
 	/* Chrome messages templates */
-	type ServiceWorkerMessage<K extends ServiceWorkerAction = ServiceWorkerAction> = {
+
+	type ServiceWorkerMessage<
+		K extends ServiceWorkerAction = ServiceWorkerAction,
+	> = {
 		action: K;
-		payload: ServiceWorkerPayloads[K]
-	}
-
-	type ServiceWorkerAction = keyof ServiceWorkerResponse
-
-	interface ServiceWorkerResponse {
-		get_render_context: {renderContext: "popup"|"side_panel "};
-		open_side_panel: null
-	}
+		payload: ServiceWorkerPayloads[K];
+	};
 
 	type ServiceWorkerPayloads = {
 		get_render_context: []; // Payload for `get_render_context`
 		// Add other actions and their payload types here
-		open_side_panel: null
+		open_side_panel: null;
+		add_to_database: StoreAddItem;
+		remove_from_database: {
+			store: StoreName; //Select store to remove  data from
+			data: StoreRemoveData;
+		};
+		update_database: {
+			store: StoreName
+			data: StoreUpdateData
+		}
+	};
+
+	type StoreRemoveData = {
+		dataType: 'project' | 'session' | 'project_schema' | "session_schema" | 'capture'; //Select the actual data to remove from store
+		mainId: ProjectId | SchemaId; //Store item id
+		secondaryId?: SessionId | SchemaId; //If we are removing a specific session or schema from a project, then we need to provide the project id > session or schema id
+		tertiaryId?: CaptureId | SchemaId; //If we are removing a specific capture or schema from a session, then we need to provide te projectId > session id > capture/schema id
+	};
+
+	type StoreUpdateData = {
+		data: ProjectDetails | SchemaDetails
+		mainId: ProjectId | SchemaId; //Store item id
+	}
+
+	type ServiceWorkerAction = keyof ServiceWorkerResponse;
+
+	interface ServiceWorkerResponse {
+		get_render_context: { renderContext: 'popup' | 'side_panel ' };
+		open_side_panel: null;
+		add_to_database: {
+			success: boolean;
+		};
+		remove_from_database: {
+			success: boolean;
+		};
+		update_database: {
+			success: boolean
+		}
+	}
+
+	/* Indexed DB */
+
+	type StoreName = 'projects' | 'schemas' | 'current_project' | 'user_data';
+
+	type StoreName = keyof StoreSchema;
+
+	type StoreSchema = {
+		projects: ProjectDetails;
+		schemas: SchemaDetails;
+		current_project: CurrentProjectDetails;
+		user_data: {};
+	};
+
+	type StoreAddItem<K extends StoreName = StoreName> = {
+		store: K;
+		data: StoreSchema[K];
 	};
 }
