@@ -1,0 +1,89 @@
+.sidePanelContainer {
+    max-height: 800px;
+    min-width: 335px;
+    max-width: 335px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0 auto;
+    margin-top: 10px;
+   
+}
+
+h1 {
+    margin-bottom: 10px
+}
+
+.schemaCreatorContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px 100px minmax(100px 600px);
+    grid-gap: 10px;
+}
+
+.sidePanelSchemaDetailsContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidePanelSchemaDetailsContainer > li {
+    display: flex;
+    
+}
+
+.sidePanelSchemaFormGrid {
+    max-width: 330px;
+    min-height: 500px;
+    max-height: 550px;
+   
+    
+}
+
+.sidePanelSchemaTable {
+    max-width: 300px;
+    margin: 0 auto
+}
+
+thead {
+    width: 300px
+}
+
+thead > tr{
+    display: grid;
+    grid-template-columns: 145px 145px;
+    grid-template-rows: 30px;
+    grid-gap: 10px;
+}
+
+tbody {
+    width: 300px;
+    display: grid;
+    grid-template-columns: 300px;
+    grid-gap: 10px;
+    grid-template-rows: 50px 50px 50px;
+    grid-auto-rows: 50px;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
+tbody > tr{
+    display: grid;
+    grid-template-columns: 145px 145px;
+    grid-gap: 10px;
+}
+
+tbody > tr > td {
+    border: 1px solid black;
+    padding: 5px;
+}
+
+tbody > tr > td > textarea{
+    width: 100%
+}
+
+textarea {
+    resize: none;
+}
+
+.sidePanelSchemaInput{}

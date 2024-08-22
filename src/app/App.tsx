@@ -18,7 +18,7 @@ function App({ renderContext = 'popup' }) {
 				<StateToggle/>
 			</>
 		);
-	} else if (renderContext === 'side panel') {
+	} else if (renderContext === 'side_panel') {
 		return <SidePanelContainer />;
 	}
 }

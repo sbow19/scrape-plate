@@ -31,8 +31,13 @@
       "outDir": "../../public/ext",
   
       "typeRoots": [
-        "./node_modules/@types",
-    ],
+        "../../node_modules/@types",
+       "../project_types/"
+      ]
     },
+    "include": [
+      "../project_types/**/*",
+      "**/*.ts",
+      "**/*.tsx"]
 
   }

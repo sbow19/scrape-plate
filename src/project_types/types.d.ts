@@ -227,4 +227,23 @@ declare global {
 		navigationStack: NavigationStackArray
 		onBack: ()=>void
 	}
+
+	/* Chrome messages templates */
+	type ServiceWorkerMessage<K extends ServiceWorkerAction = ServiceWorkerAction> = {
+		action: K;
+		payload: ServiceWorkerPayloads[K]
+	}
+
+	type ServiceWorkerAction = keyof ServiceWorkerResponse
+
+	interface ServiceWorkerResponse {
+		get_render_context: {renderContext: "popup"|"side_panel "};
+		open_side_panel: null
+	}
+
+	type ServiceWorkerPayloads = {
+		get_render_context: []; // Payload for `get_render_context`
+		// Add other actions and their payload types here
+		open_side_panel: null
+	};
 }
