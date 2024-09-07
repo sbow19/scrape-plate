@@ -3,13 +3,15 @@ import navigationSlice from '#ducks/features/navigation/navigationSlice'
 import contentContainerSlice from '#ducks/features/content_container/contentContainerSlice';
 import currentProjectSlice from '#ducks/features/current_project/currentProjectSlice';
 import schemasSlice from '#ducks/features/schemas/schemasSlice';
+import projectsSlice from '#ducks/features/projects/projectsSlice';
 
 const store = configureStore({
   reducer: {
     navigation: navigationSlice,
     contentContainer: contentContainerSlice,
     currentProject: currentProjectSlice,
-    schemas: schemasSlice
+    schemas: schemasSlice,
+    projects: projectsSlice
   },
 })
 

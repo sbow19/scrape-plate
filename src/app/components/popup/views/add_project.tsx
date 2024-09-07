@@ -6,10 +6,12 @@ import React from 'react';
 import * as styles from '#styles/popup.module.css';
 
 import CreateProjectButton from '#components/buttons/create_project_button';
+import Spinner from '#components/shared/spinner';
 
 const AddProject: React.FC<AddProjectViewProps> = ({
 	userSchemas,
 	sessionList,
+	projectName,
 	onProjectNameChange: handleProjectNameChange,
 	onSessionAdd: handleAddSession,
 	sessionName,
@@ -21,16 +23,18 @@ const AddProject: React.FC<AddProjectViewProps> = ({
 	onSchemaSelect: handleSchemaSelect,
 	onSchemaDelete: handleSchemaDelete,
 
-	onAddProject: handleAddProject
+	onAddProject: handleAddProject,
+	isLoading,
+	isError
 }) => {
-
-
 
 	const chosenSchemaKeys = Object.keys(schemaList);
 	const allSchemaKeys = Object.keys(userSchemas);
 
 	return (
 		<div className={styles.popupAddProjectScreen}>
+			{/* Spinner animation while loading*/}
+			{isLoading ? <Spinner /> : null}
 			<h2 className={styles.popupAddProjectHeader}>Add Project</h2>
 			<form className={styles.popupAddProjectForm}>
 				<div className={styles.addProjectTitle}>
@@ -39,10 +43,11 @@ const AddProject: React.FC<AddProjectViewProps> = ({
 				<div className={styles.addProjectTitleInput}>
 					<input
 						type='text'
-						placeholder='Project Name'
+						placeholder="project name..."
 						onChange={(e)=>{
 							handleProjectNameChange(e.target.value);
 						}}
+						value={projectName}
 					/>
 				</div>
 

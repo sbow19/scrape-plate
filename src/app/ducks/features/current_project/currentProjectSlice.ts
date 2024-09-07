@@ -2,7 +2,6 @@
  * Manage current project state
  */
 import { emptyProjectDetails } from "#mocks/dummyData";
-import { projectDetails } from "#mocks/dummyData";
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -16,10 +15,9 @@ export const currentProjectSlice = createSlice({
             state = action.payload;      
             
         },
-        changeProject: (state: CurrentProjectDetails, action: PayloadAction<ProjectId>) => {
+        changeProject: (state: CurrentProjectDetails, action: PayloadAction<CurrentProjectDetails>) => {
 
-            //Thunk middleware to retrieve project details
-            state = {...projectDetails};  
+            state = action.payload;  
             return state   
             
         }

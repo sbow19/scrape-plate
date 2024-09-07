@@ -8,10 +8,9 @@ const CurrentProjectScreen: React.FC<CurrentProjectScreenProps> = ({
 	projectList,
 	inputText,
 	onChange: handleTextChange,
-	onSelect: handleSelect
 }) => {
 	//Extract sessions and schemas associated with project. Assign empty array if there is a null entry
-	const sessionNames = currentProject?.sessionNames ?? [];
+	const sessionNames = Object.values(currentProject?.sessionNames ?? {}) ?? [];
 	const projectSchemas = currentProject?.projectSchemas ?? [];
 
 	return (
@@ -31,13 +30,12 @@ const CurrentProjectScreen: React.FC<CurrentProjectScreenProps> = ({
 					id='project_list'
 					data-testid='project_list'
 				>
-					{projectList.length > 0 ? (
-						projectList.map((project) => (
+					{Object.keys(projectList).length > 0 ? (
+						Object.keys(projectList).map((projectId) => (
 							<option
-								key={project.id}
-								value={project.name}
-								data-testid={project.name}
-								onClick={()=>{handleSelect(project.id, project.name, "project")}}
+								key={projectList[projectId].id}
+								value={projectList[projectId].name}
+								data-testid={projectList[projectId].name}
 							></option>
 						))
 					) : (
@@ -67,7 +65,6 @@ const CurrentProjectScreen: React.FC<CurrentProjectScreenProps> = ({
 								key={session.id}
 								value={session.name}
 								data-testid={session.name}
-								onClick={()=>{handleSelect(session.id, session.name, "session")}}
 							></option>
 						))
 					) : (
@@ -97,7 +94,6 @@ const CurrentProjectScreen: React.FC<CurrentProjectScreenProps> = ({
 								key={schema.id}
 								value={schema.name}
 								data-testid={schema.name}
-								onClick={()=>{handleSelect(schema.id, schema.name, "schema")}}
 							></option>
 						))
 					) : (

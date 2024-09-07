@@ -11,16 +11,16 @@ declare global {
 	type ProjectDetails = {
 		name: ProjectName;
 		id: ProjectId;
-		sessionNames: {[sessionId: SessionId]: SessionDetails} | null;
-		projectSchemas: {[schemaId: SchemaId]: SchemaDetails} | null;
+		sessionNames: { [sessionId: SessionId]: SessionDetails } | null;
+		projectSchemas: { [schemaId: SchemaId]: SchemaDetails } | null;
 		lastModified: string | null;
 	};
 
-	type AllProjects = ProjectsList
+	type AllProjects = ProjectsList;
 
-	type ProjectsList = {[id: ProjectId]: ProjectDetails}
+	type ProjectsList = { [id: ProjectId]: ProjectDetails };
 
-	type SessionList = {[sessionId: SessionId]: SessionDetails}
+	type SessionList = { [sessionId: SessionId]: SessionDetails };
 
 	type SchemaId = string;
 	type SessionId = string;
@@ -30,8 +30,8 @@ declare global {
 		id: SessionId;
 		projectId: ProjectId;
 		projectName: ProjectName;
-		sessionSchemas: {[schemaId: SchemaId]: SchemaDetails} | null;
-		captures: {[captureId: CaptureId]: CaptureDetails} | null
+		sessionSchemas: { [schemaId: SchemaId]: SchemaDetails } | null;
+		captures: { [captureId: CaptureId]: CaptureDetails } | null;
 		lastModified: string | null;
 	};
 
@@ -71,7 +71,7 @@ declare global {
 		  }
 		| {
 				currentView: 'current_project';
-				viewParams: CurrentProjectDetails;
+				viewParams: {};
 				currentStack: NavigationStackArray;
 		  }
 
@@ -193,7 +193,7 @@ declare global {
 
 	//User schemas state
 
-	type SchemaList = {[schemaId: SchemaId]: SchemaDetails};
+	type SchemaList = { [schemaId: SchemaId]: SchemaDetails };
 
 	/*
 		Component Props
@@ -208,14 +208,13 @@ declare global {
 	/** Props */
 	interface CurrentProjectScreenProps {
 		currentProject: CurrentProjectDetails;
-		projectList: Array<ProjectDetails>;
+		projectList: ProjectsList;
 		inputText: {
 			projectText: string;
 			sessionText: string;
 			schemaText: string;
 		};
 		onChange: InputChangeHandler;
-		onSelect: SelectHandler;
 	}
 
 	//Manage projects Screen
@@ -232,8 +231,8 @@ declare global {
 
 	//Create project button props
 	interface CreateProjectButtonProps {
-		onClick: ()=>void
-		buttonStyle: "main-button"
+		onClick: () => void;
+		buttonStyle: 'main-button';
 	}
 
 	//Button Template Props
@@ -253,7 +252,7 @@ declare global {
 	interface AddProjectViewProps {
 		userSchemas: SchemaList;
 		sessionList: Array<string>;
-		onProjectNameChange: (string: string)=>void
+		onProjectNameChange: (string: string) => void;
 		onSessionAdd: (
 			event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
 		) => void;
@@ -274,13 +273,28 @@ declare global {
 			schemaName: SchemaName,
 		) => void;
 
-		onAddProject: ()=>void
+		onAddProject: () => void;
 	}
 
 	interface MainProps {
 		currentView: Views;
 		navigationStack: NavigationStackArray;
 		onBack: () => void;
+	}
+
+	interface MainContainerProps {
+	}
+
+	interface SidePanelProps {
+		currentView: "schema_capture" | "schema_editor";
+	}
+
+	interface SidePanelContainerProps {
+
+	}
+
+	interface AppProps {
+		renderContext:  ServiceWorkerResponse["get_render_context"]
 	}
 
 	/* Chrome messages templates */
@@ -295,36 +309,46 @@ declare global {
 	type ServiceWorkerPayloads = {
 		get_render_context: []; // Payload for `get_render_context`
 		// Add other actions and their payload types here
-		open_side_panel: null;
+		open_side_panel: {
+			panel_view: SidePanelViews;
+		};
 		add_to_database: StoreAddItem;
 		remove_from_database: {
 			store: StoreName; //Select store to remove  data from
 			data: StoreRemoveData;
 		};
 		update_database: {
-			store: StoreName
-			data: StoreUpdateData
+			store: StoreName;
+			data: StoreUpdateData;
 		};
-		fetch_all_projects: null
-		fetch_all_schemas: null
+		fetch_all_projects: null;
+		fetch_all_schemas: null;
 	};
 
 	type StoreRemoveData = {
-		dataType: 'project' | 'session' | 'project_schema' | "session_schema" | "schema" | 'capture'; //Select the actual data to remove from store
+		dataType:
+			| 'project'
+			| 'session'
+			| 'project_schema'
+			| 'session_schema'
+			| 'schema'
+			| 'capture'; //Select the actual data to remove from store
 		mainId: ProjectId | SchemaId; //Store item id
 		secondaryId?: SessionId | SchemaId; //If we are removing a specific session or schema from a project, then we need to provide the project id > session or schema id
 		tertiaryId?: CaptureId | SchemaId; //If we are removing a specific capture or schema from a session, then we need to provide te projectId > session id > capture/schema id
 	};
 
 	type StoreUpdateData = {
-		data: ProjectDetails | SchemaDetails
+		data: ProjectDetails | SchemaDetails;
 		mainId: ProjectId | SchemaId; //Store item id
-	}
+	};
 
 	type ServiceWorkerAction = keyof ServiceWorkerResponse;
 
 	interface ServiceWorkerResponse {
-		get_render_context: { renderContext: 'popup' | 'side_panel ' };
+		get_render_context:
+			| { renderContext: 'popup'; view: 'welcome' | 'current_project' }
+			| { renderContext: 'side_panel'; view: 'schema_editor' | "schema_capture" };
 		open_side_panel: null;
 		add_to_database: {
 			success: boolean;
@@ -333,11 +357,17 @@ declare global {
 			success: boolean;
 		};
 		update_database: {
-			success: boolean
+			success: boolean;
 		};
-		fetch_all_projects: ProjectsList
-		fetch_all_schemas: SchemaList
+		fetch_all_projects: ProjectDetails[] | [];
+		fetch_all_schemas: SchemaList;
 	}
+
+	type ServiceWorkerResponseBase = {
+		error?: Error
+	}
+
+
 
 	/* Indexed DB */
 
@@ -356,4 +386,17 @@ declare global {
 		store: K;
 		data: StoreSchema[K];
 	};
+
+	/* Chrome helpers */
+	type SidePanelViews = 'schema_capture' | 'schema_editor';
+
+	/* Thunks async promist state */
+	interface ProjectListFetch extends PromiseState {
+		projectList: ProjectsList
+	}
+
+	type PromiseState = {
+		isLoading: boolean
+		isError: boolean
+	}
 }

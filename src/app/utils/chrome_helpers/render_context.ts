@@ -1,6 +1,6 @@
 /* Determines where app is renderd */
-const getRenderContext = async (): Promise<string> => {
-	return new Promise((resolve, reject) => {
+const getRenderContext = async (): Promise<ServiceWorkerResponse["get_render_context"]> => {
+	return new Promise((resolve) => {
 		/* Send service worker a render context request */
 		chrome.runtime.sendMessage<ServiceWorkerMessage>(
 			{
@@ -9,7 +9,7 @@ const getRenderContext = async (): Promise<string> => {
 			},
 			(response: ServiceWorkerResponse['get_render_context']) => {
 			
-				resolve(response.renderContext);
+				resolve(response);
 			},
 		);
 	});

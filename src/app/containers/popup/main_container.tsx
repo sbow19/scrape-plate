@@ -6,15 +6,16 @@ import { popView } from '#ducks/features/navigation/navigationSlice'
 import { contentContainerPrefill } from 'app/utils/content_container_boilerplate';
 import { changeContent } from '#ducks/features/content_container/contentContainerSlice';
 
-const MainPopupViewContainer: React.FC = () => {
+const MainPopupViewContainer: React.FC<MainContainerProps> = () => {
 
 	const { currentView, currentStack }  = useAppSelector((state) => state.navigation);
 	const dispatch = useAppDispatch();
 
+	//
 	const handleBack = ()=>{
 		dispatch(popView());
 
-		//Change content of content templtae if applicable
+		//Change content of content template, if applicable
 		const prevViewDetails = currentStack[currentStack.length - 2];
 		const prevView = prevViewDetails.currentView;
 
@@ -39,7 +40,7 @@ const MainPopupViewContainer: React.FC = () => {
 				break
 
 		}
-	}
+	};
 
 	return (
 		<>

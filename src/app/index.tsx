@@ -11,16 +11,18 @@ import getRenderContext from './utils/chrome_helpers/render_context';
 /* DEV STYLES __REMOVE IN PRODUCTION__ */
 import '#styles/dev.module.css';
 
-let renderContext: string = 'popup'
-/* Check render context */
+let renderContext: ServiceWorkerResponse["get_render_context"] = {
+	renderContext: 'popup',
+	view: "welcome"
+}
 
+/* Check render context */
 try {
 	renderContext = await getRenderContext();
 } catch (e) {
 	throw new Error('Could not get render context');
 }
 
-console.log(renderContext)
 
 /* Render context */
 const root = ReactDOM.createRoot(

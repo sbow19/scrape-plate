@@ -9,13 +9,16 @@ import CurrentProjectScreenContainer from '#containers/popup/views/current_proje
 import ContentTemplateContainer from '#containers/popup/views/content_template_container';
 import AddProjectContainer from '#containers/popup/views/add_project_container';
 
+import { ToastContainer } from 'react-toastify';
+
+
 const MainPopupView: React.FC<MainProps> = ({
 	currentView,
 	navigationStack,
 	onBack: handleBack,
 }) => {
 	let ViewToRender: JSX.Element = <></>;
-	
+
 	//Re render when navigation stack changes, as in some instances refreshes do not occurs
 
 	switch (currentView) {
@@ -51,6 +54,7 @@ const MainPopupView: React.FC<MainProps> = ({
 	}
 	return (
 		<>
+			<ToastContainer />
 			<main
 				className={styles.popupContainer}
 				aria-label='Popup view'

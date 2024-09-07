@@ -37,7 +37,6 @@ class IndexedDBWrapper {
 							return true;
 						},
 					);
-
 					
 					//Initiate stores
 					for (const uncreatedStore of uncreatedObjectStores) {
@@ -88,6 +87,12 @@ class IndexedDBWrapper {
 	}
 
     static async addToStore<K extends StoreName>(storeName: K, storeItem: StoreSchema[K]){
+
+		//Reopen db if Service Worker closed
+		if(!IndexedDBWrapper.db){
+			await IndexedDBWrapper.createStoreInDB()
+		}
+
         const transaction = IndexedDBWrapper.db.transaction(storeName, 'readwrite');
 
         //Carry out transaction on specific store
@@ -99,6 +104,10 @@ class IndexedDBWrapper {
 
 	static async removeFromStore<K extends StoreName>(storeName: K, storeItem: StoreRemoveData){
 
+		//Reopen db if Service Worker closed
+		if(!IndexedDBWrapper.db){
+			await IndexedDBWrapper.createStoreInDB()
+		}
 		
         const transaction = IndexedDBWrapper.db.transaction(storeName, 'readwrite');
 		
@@ -173,6 +182,11 @@ class IndexedDBWrapper {
 
 	static async updateStore<K extends StoreName>(storeName: K, storeItem: StoreUpdateData){
 
+		//Reopen db if Service Worker closed
+		if(!IndexedDBWrapper.db){
+			await IndexedDBWrapper.createStoreInDB()
+		}
+		
 		const transaction = IndexedDBWrapper.db.transaction(storeName, 'readwrite');
 
 		//replace schema or project details with updated sent from session
@@ -181,6 +195,23 @@ class IndexedDBWrapper {
 		//Commit transaction
         await transaction.done;
     
+	}
+
+	static async fetchAllProjects(){
+		//Reopen db if Service Worker closed
+		if(!IndexedDBWrapper.db){
+			await IndexedDBWrapper.createStoreInDB()
+		};
+
+		const transaction = IndexedDBWrapper.db.transaction("projects", 'readwrite');
+
+		//Get all projects from store
+        const projects: ProjectDetails[] = await transaction.store.getAll();
+
+		await transaction.done
+
+		return projects
+
 	}
 }
 

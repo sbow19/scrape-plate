@@ -2,7 +2,12 @@
 
 import IndexedDBWrapper from "../models/indexed_db_wrapper";
 
+//Global extension constants accessed by extension
 let renderContext: string = 'popup'; //Set render context variable
+
+let popupRenderView: Views = 'welcome' //Set popup render view
+
+let sidePanelRenderView: SidePanelViews = 'schema_editor'
 
 //Get render context message
 chrome.runtime.onMessage.addListener(
@@ -13,19 +18,31 @@ chrome.runtime.onMessage.addListener(
 	) => {
 		//Check that correct action was called by frontend
 		if (message.action === 'get_render_context') {
-			//If side panel is active, send back 'side_panel'
-			sendResponse({ renderContext: renderContext });
+
+			const renderContextResponse: ServiceWorkerResponse["get_render_context"] = {
+				renderContext: renderContext,
+				view: renderContext === "popup" ? popupRenderView : sidePanelRenderView
+			}
+			
+			sendResponse(renderContextResponse);
 
 			//Reset to popup if side_panel
 			renderContext = 'popup';
 		}
+
+		return true; //Indicate that listener response is async function
 	},
 );
 
 chrome.runtime.onMessage.addListener(
 	(message: ServiceWorkerMessage<'open_side_panel'>) => {
 		if (message.action === 'open_side_panel') {
+
+			//Set global render context
 			renderContext = 'side_panel';
+
+			//Set global side panel render renderContext
+			sidePanelRenderView = message.payload.panel_view;
 
 			chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
 				const tabId = tab.id;
@@ -56,14 +73,60 @@ chrome.runtime.onInstalled.addListener(async ()=>{
 
 });
 
+//Fetch all projects
+//Async helper function
+const fetchAllProjects = async()=>{
 
+	try{
+		const projectsList = await IndexedDBWrapper.fetchAllProjects();
+		return projectsList
+
+	}catch(e){
+
+		console.log(e);
+		throw new Error("")
+
+	} 
+
+}
+chrome.runtime.onMessage.addListener(async (
+	message: ServiceWorkerMessage<'fetch_all_projects'>,
+    sender,
+    sendResponse,
+)=>{
+
+	//Check if action is fetch all projects
+	if(message.action === "fetch_all_projects"){
+
+		let serviceWorkerResponse: ServiceWorkerResponse["fetch_all_projects"] = [];
+
+    	fetchAllProjects().then((projectList)=>{
+			serviceWorkerResponse = projectList;
+			sendResponse(serviceWorkerResponse)
+
+		}).catch((e)=>{
+			console.log(typeof e);
+			sendResponse(serviceWorkerResponse);
+		})
+
+        return true; //Indicate that service worker response is asynchronous
+    }
+})
 
 
 //Async helper function
 const addToDatabase = async(store: StoreName, data: StoreSchema[StoreName])=>{
 
-	await IndexedDBWrapper.addToStore(store, data);
-	return "Add to database successful"
+	try{
+		await IndexedDBWrapper.addToStore(store, data);
+		return "Add to database successful"
+
+	}catch(e){
+
+		console.log(e);
+		throw new Error("")
+
+	} 
 
 }
 
@@ -98,8 +161,6 @@ chrome.runtime.onMessage.addListener((
 		
 	} 
 });
-
-
 
 
 //Helper function remove from database
@@ -140,10 +201,6 @@ chrome.runtime.onMessage.addListener((
 		
 	} 
 });
-
-
-
-
 
 //Update data from store
 //Helper function update database

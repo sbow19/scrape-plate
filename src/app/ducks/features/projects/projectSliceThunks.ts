@@ -8,15 +8,26 @@ export const fetchAllProjects = createAsyncThunk(
 
         try{
             const allProjects = await ServiceWorkerDBCalls.fetchAllProjects();
-            return allProjects;
+
+            //Convert project details array to a project lists object
+            /**
+             * Add code here
+             */
+
+            const projectListTemplate: ProjectsList = {}
+
+            const projectList: ProjectsList = allProjects.reduce((list, project)=>{
+                list[project.id] = project;
+                return list;
+            }, projectListTemplate);
+
+
+            return projectList;
         }catch(e){
 
             console.log(e);
             throw new Error("Failed to fetch projects");
-
         }
-        
-
     }
 );
 
@@ -26,6 +37,8 @@ export const addProject = createAsyncThunk(
         try{
 
             const result = await ServiceWorkerDBCalls.addProject(projectDetails);
+
+            console.log(result)
 
             if(result.success){
                 return projectDetails

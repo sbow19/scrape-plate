@@ -3,11 +3,11 @@
 class ServiceWorkerDBCalls {
     constructor() {};
 
-    static fetchAllProjects = async(): Promise<ProjectsList> =>{
+    static fetchAllProjects = async(): Promise<ProjectDetails[]> =>{
 
         try{
 
-            const allProjects: ProjectsList = await chrome.runtime.sendMessage<ServiceWorkerMessage<"fetch_all_projects">>({
+            const allProjects: ProjectDetails[] = await chrome.runtime.sendMessage<ServiceWorkerMessage<"fetch_all_projects">>({
                 action: "fetch_all_projects",
                 payload: null
             });

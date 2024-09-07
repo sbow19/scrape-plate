@@ -1,9 +1,10 @@
-const openSidePanel = ()=>{
+const openSidePanel = (view: SidePanelViews)=>{
 
-    
     chrome.runtime.sendMessage<ServiceWorkerMessage<"open_side_panel">>({
       action: "open_side_panel",
-      payload: null  
+      payload: {
+        panel_view: view
+      }  
     });
 
     window.close();
