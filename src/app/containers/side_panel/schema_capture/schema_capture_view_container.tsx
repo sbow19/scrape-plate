@@ -1,13 +1,17 @@
 import React from 'react';
-import SchemaCaptureView from '#components/side_panel/schema_capture/schema_capture_view';
+import CaptureView from '#components/side_panel/schema_capture/schema_capture_view';
 
 
-const SchemaCaptureViewContainer = () => {
+const CaptureViewContainer: React.FC = ({children}) => {
 	return (
 		<>
-			<SchemaCaptureView />
+		    {/* CaptureView component */}
+			<CaptureView />
+
+			{/* Grid to populate */}
+			{children}
 		</>
 	);
 };
 
-export default SchemaCaptureViewContainer;
+export default CaptureViewContainer;

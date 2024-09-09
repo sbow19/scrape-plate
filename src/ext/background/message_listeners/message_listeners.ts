@@ -3,11 +3,11 @@
 import IndexedDBWrapper from "../models/indexed_db_wrapper";
 
 //Global extension constants accessed by extension
-let renderContext: string = 'popup'; //Set render context variable
+let renderContext: string = 'popup'; //Set view context variable
 
-let popupRenderView: Views = 'welcome' //Set popup render view
+let popupRenderView: Views = 'welcome' //Popup view
 
-let sidePanelRenderView: SidePanelViews = 'schema_editor'
+let sidePanelRenderView: SidePanelViews = 'schema_creator' //Side panel view
 
 //Get render context message
 chrome.runtime.onMessage.addListener(

@@ -143,6 +143,9 @@ declare global {
 		| 'manage_schema'
 		| 'add_schema'
 		| "add_session"
+		| "schema_capture"
+		| "schema_editor"
+		| "schema_creator"
 
 	/* Views params */
 	interface ManageSessionParams extends ProjectDetails {
@@ -325,7 +328,7 @@ declare global {
 	interface MainContainerProps {}
 
 	interface SidePanelProps {
-		currentView: 'schema_capture' | 'schema_editor';
+		currentView: 'schema_capture' | 'schema_editor' | "schema_creator";
 	}
 
 	interface SidePanelContainerProps {}
@@ -392,7 +395,7 @@ declare global {
 			| { renderContext: 'popup'; view: 'welcome' | 'current_project' }
 			| {
 					renderContext: 'side_panel';
-					view: 'schema_editor' | 'schema_capture';
+					view: 'schema_editor' | 'schema_capture' | "schema_creator";
 			  };
 		open_side_panel: null;
 		add_to_database: {
@@ -447,7 +450,7 @@ declare global {
 	};
 
 	/* Chrome helpers */
-	type SidePanelViews = 'schema_capture' | 'schema_editor';
+	type SidePanelViews = 'schema_capture' | 'schema_editor' | "schema_creator";
 
 	/* Thunks async promist state */
 	interface ProjectListFetch extends PromiseState {

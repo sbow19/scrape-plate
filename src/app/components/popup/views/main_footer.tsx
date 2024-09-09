@@ -11,7 +11,7 @@ const MainFooter: React.FC<MainFooterProps> = ({onManageProjectsClick: handleMan
 			role=''
 		>
 			<div>
-				<button onClick={()=>openSidePanel("schema_editor")}>Create Schema</button>
+				<button onClick={()=>openSidePanel("schema_creator")}>Create Schema</button>
 			</div>
 			<div>
 				<button onClick={()=>openSidePanel("schema_capture")}>Scrape</button>

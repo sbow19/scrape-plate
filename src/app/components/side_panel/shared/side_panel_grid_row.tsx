@@ -1,7 +1,7 @@
 import React from 'react'
 import * as styles from '#styles/side_panel.module.css';
 
-const SchemaCaptureRow = () => {
+const SidePanelGridRow = () => {
 	return (
 		<tr>
 			
@@ -22,4 +22,4 @@ const SchemaCaptureRow = () => {
 	);
 };
 
-export default SchemaCaptureRow;
+export default SidePanelGridRow;
