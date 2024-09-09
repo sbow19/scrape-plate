@@ -1,5 +1,4 @@
 import {
-	projectsList,
 	mockProjectSchemas,
 	mockSessionNames,
 } from '#mocks/dummyData';
@@ -21,13 +20,7 @@ export const contentContainerPrefill: ContentContainerPrefill = {
 		currentView: 'all_projects',
 		title: 'Manage All Projects',
 		tableHeaders: ['Project Name', 'Last Updated', 'Options'],
-		tableRowData: projectsList.map((project)=>{
-			return {
-				name: project.name,
-				id: project.id,
-                description: project.lastModified
-			}
-		}),
+		tableRowData: [],
 		id: null,
 		names: null,
 	},
@@ -35,17 +28,9 @@ export const contentContainerPrefill: ContentContainerPrefill = {
 		currentView: 'manage_project',
 		title: 'Manage Project',
 		tableHeaders: ['Session Name', 'Last Updated', 'Options'],
-		tableRowData: mockSessionNames.map((session)=>{
-			return(
-				{
-                    name: session.name,
-                    id: session.id,
-                    description: session.lastModified
-                }
-			)
-		}),
+		tableRowData: [],
 		id: '',
-		names: 'Default Project',
+		names: [],
 	},
 	manageSession: {
 		currentView: 'manage_session',

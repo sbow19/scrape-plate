@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import MainPopupViewContainer from '#containers/popup/main_container';
 import SidePanelContainer from '#containers/side_panel/side_panel_container';
-import StateToggle from '#mocks/state_toggle';
 
 import { useAppDispatch } from 'app/utils/hooks';
 import { changeView } from '#ducks/features/navigation/navigationSlice';
 import { fetchAllProjects } from '#ducks/features/projects/projectSliceThunks';
+import { getCurrentProject } from '#ducks/features/current_project/currentProjectSliceThunks';
 
 import { toast } from 'react-toastify';
 
@@ -22,28 +22,12 @@ const App: React.FC<AppProps> = ({ renderContext }) => {
 	//Here we update the global view state with the render context presets
 	const dispatch = useAppDispatch();
 
-	//Make sure that the current view is set to render context values
-	dispatch(
-		changeView({
-			currentView: renderContext.view,
-			viewParams: {},
-			currentStack: [],
-		}),
-	);
-
-	//Here we fetch the project list data
+	//Fetch the project list data
 	useEffect(() => {
 		const fetchProjects = async () => {
 			try {
 				await dispatch(fetchAllProjects()).unwrap();
 
-				toast.success('Projects fetched', {
-					autoClose: 1000,
-					pauseOnHover: false,
-					pauseOnFocusLoss: false,
-					closeOnClick: true,
-					hideProgressBar: true,
-				}); // Use unwrap() to handle rejected promises
 			} catch (err) {
 				console.error('Failed to fetch projects:', err);
 				toast.error('Projects failed to load', {
@@ -59,11 +43,63 @@ const App: React.FC<AppProps> = ({ renderContext }) => {
 		fetchProjects();
 	}, [dispatch]);
 
+	//Fetch current project details
+	useEffect(() => {
+		const fetchCurrentProject = async () => {
+			try {
+				const currentProjectDetails = await dispatch(getCurrentProject()).unwrap();
+
+				const dummyProject: CurrentProjectDetails = {
+					name: "",
+					id: "",
+					lastModified: null,
+					lastSchema: null,
+					lastSession: null,
+					sessionNames: {},
+					projectSchemas: {}
+				};
+
+				//If this is the first time logging in, then we send to welcome screen, otherwise to current rpoject screen
+				if(renderContext.renderContext === "popup"){
+					dispatch(
+						changeView({
+							currentView: 'current_project',
+							viewParams: currentProjectDetails ?? dummyProject,
+							currentStack: [],
+						}),
+					);
+				} else if(renderContext.renderContext === "side_panel"){
+					dispatch(
+						changeView({
+							currentView: renderContext.view,
+							viewParams: currentProjectDetails ?? dummyProject,
+							currentStack: [],
+						}),
+					);
+				}
+			
+
+			} catch (err) {
+				console.error('Failed to fetch current project:', err);
+				toast.error('Failed to fetch current project', {
+					autoClose: 1000,
+					pauseOnHover: false,
+					pauseOnFocusLoss: false,
+					closeOnClick: true,
+					hideProgressBar: true,
+				});
+			}
+		};
+
+		fetchCurrentProject();
+	}, [dispatch]);
+
+	//If current project, then we set render context to current project
+
 	if (renderContext.renderContext === 'popup') {
 		return (
 			<>
 				<MainPopupViewContainer />
-				<StateToggle />
 			</>
 		);
 	} else if (renderContext.renderContext === 'side_panel') {

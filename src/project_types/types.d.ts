@@ -35,8 +35,22 @@ declare global {
 		lastModified: string | null;
 	};
 
+	type CaptureDetails = {
+		name: CaptureName;
+		id: CaptureId;
+		capturedContent: JSON | null;
+		lastModified: string;
+	};
+
+	type CaptureList = { [captureId: CaptureId]: CaptureDetails } | null;
+
 	type ProjectName = string;
 	type ProjectId = string;
+
+	type SessionIdObject = {
+		sessionId: SessionId
+		projectId: ProjectId
+	}
 
 	type SchemaDetails = {
 		name: SchemaName;
@@ -71,7 +85,7 @@ declare global {
 		  }
 		| {
 				currentView: 'current_project';
-				viewParams: {};
+				viewParams: CurrentProjectDetails;
 				currentStack: NavigationStackArray;
 		  }
 
@@ -83,7 +97,7 @@ declare global {
 		  }
 		| {
 				currentView: 'all_projects';
-				viewParams: AllProjects;
+				viewParams: ProjectsList;
 				currentStack: NavigationStackArray;
 		  }
 		| {
@@ -110,7 +124,12 @@ declare global {
 				currentView: 'add_project';
 				viewParams: {};
 				currentStack: NavigationStackArray;
-		  };
+		  }
+		| {
+			currentView: 'add_session';
+			viewParams: ProjectDetails;
+			currentStack: NavigationStackArray;
+	  };
 
 	type Views =
 		| 'welcome'
@@ -122,10 +141,11 @@ declare global {
 		| 'manage_capture'
 		| 'add_project'
 		| 'manage_schema'
-		| 'add_schema';
+		| 'add_schema'
+		| "add_session"
 
 	/* Views params */
-	type ManageSessionParams = {
+	interface ManageSessionParams extends ProjectDetails {
 		sessionId: SessionId | null;
 	};
 
@@ -276,25 +296,42 @@ declare global {
 		onAddProject: () => void;
 	}
 
+	//Add Project View props
+	interface AddSessionViewProps {
+		userSchemas: SchemaList;
+		sessionName: string;
+		projectName: string;
+		onSessionNameChange: (sessionName: string) => void;
+
+		schemaList: SchemaLists;
+		onSchemaAdd: (
+			event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		) => void;
+		onSchemaSelect: ChangeEventHandler<HTMLSelectElement>;
+		onSchemaDelete: (
+			event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+			schemaName: SchemaName,
+		) => void;
+
+		onAddSession: () => void;
+	}
+
 	interface MainProps {
 		currentView: Views;
 		navigationStack: NavigationStackArray;
 		onBack: () => void;
 	}
 
-	interface MainContainerProps {
-	}
+	interface MainContainerProps {}
 
 	interface SidePanelProps {
-		currentView: "schema_capture" | "schema_editor";
+		currentView: 'schema_capture' | 'schema_editor';
 	}
 
-	interface SidePanelContainerProps {
-
-	}
+	interface SidePanelContainerProps {}
 
 	interface AppProps {
-		renderContext:  ServiceWorkerResponse["get_render_context"]
+		renderContext: ServiceWorkerResponse['get_render_context'];
 	}
 
 	/* Chrome messages templates */
@@ -323,6 +360,11 @@ declare global {
 		};
 		fetch_all_projects: null;
 		fetch_all_schemas: null;
+		change_current_project: ProjectId;
+		get_current_project: null;
+		remove_current_project: null;
+		remove_current_session: SessionId;
+		change_current_project_details: CurrentProjectDetails
 	};
 
 	type StoreRemoveData = {
@@ -348,26 +390,40 @@ declare global {
 	interface ServiceWorkerResponse {
 		get_render_context:
 			| { renderContext: 'popup'; view: 'welcome' | 'current_project' }
-			| { renderContext: 'side_panel'; view: 'schema_editor' | "schema_capture" };
+			| {
+					renderContext: 'side_panel';
+					view: 'schema_editor' | 'schema_capture';
+			  };
 		open_side_panel: null;
 		add_to_database: {
 			success: boolean;
+			data?: ProjectDetails
 		};
 		remove_from_database: {
 			success: boolean;
+			data?: ProjectDetails 
 		};
 		update_database: {
 			success: boolean;
 		};
 		fetch_all_projects: ProjectDetails[] | [];
 		fetch_all_schemas: SchemaList;
+		change_current_project: ProjectDetails;
+		get_current_project: CurrentProjectDetails | null;
+		remove_current_project: {
+			success: boolean
+		}
+		remove_current_session: {
+			success: boolean;
+		}
+		change_current_project_details: {
+			success: boolean
+		}
 	}
 
 	type ServiceWorkerResponseBase = {
-		error?: Error
-	}
-
-
+		error?: Error;
+	};
 
 	/* Indexed DB */
 
@@ -376,7 +432,10 @@ declare global {
 	type StoreName = keyof StoreSchema;
 
 	type StoreSchema = {
-		projects: ProjectDetails;
+		projects: {
+			addType: "project" | "session" | "schema"
+			data: ProjectDetails | SessionDetails
+		};
 		schemas: SchemaDetails;
 		current_project: CurrentProjectDetails;
 		user_data: {};
@@ -392,11 +451,11 @@ declare global {
 
 	/* Thunks async promist state */
 	interface ProjectListFetch extends PromiseState {
-		projectList: ProjectsList
+		projectList: ProjectsList;
 	}
 
 	type PromiseState = {
-		isLoading: boolean
-		isError: boolean
-	}
+		isLoading: boolean;
+		isError: boolean;
+	};
 }

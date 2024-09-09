@@ -8,9 +8,9 @@ import WelcomeScreenContainer from '#containers/popup/views/welcome_screen_conta
 import CurrentProjectScreenContainer from '#containers/popup/views/current_project_screen_container';
 import ContentTemplateContainer from '#containers/popup/views/content_template_container';
 import AddProjectContainer from '#containers/popup/views/add_project_container';
+import AddSessionContainer from '#containers/popup/views/add_session_container';
 
 import { ToastContainer } from 'react-toastify';
-
 
 const MainPopupView: React.FC<MainProps> = ({
 	currentView,
@@ -39,6 +39,9 @@ const MainPopupView: React.FC<MainProps> = ({
 			break;
 		case 'manage_session':
 			ViewToRender = <ContentTemplateContainer />;
+			break;
+		case 'add_session':
+			ViewToRender = <AddSessionContainer />;
 			break;
 		case 'schemas':
 			ViewToRender = <ContentTemplateContainer />;

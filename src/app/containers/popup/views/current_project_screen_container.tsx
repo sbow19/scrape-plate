@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import CurrentProjectScreen from '#components/popup/views/current_project_screen';
 import { useAppDispatch, useAppSelector } from 'app/utils/hooks';
-import { changeProject, changeProjectDetails } from '#ducks/features/current_project/currentProjectSlice';
+import {
+	changeCurrentProject,
+	changeCurrentProjectDetails,
+} from '#ducks/features/current_project/currentProjectSliceThunks';
 
+import { toast } from 'react-toastify';
+import { changeView } from '#ducks/features/navigation/navigationSlice';
 
-
-const helper = (name, list)=>{
-
-	return list.some((entry)=>{
-		if(entry.name === name){
-			return true
+const helper = (name, list) => {
+	return list.some((entry) => {
+		if (entry.name === name) {
+			return true;
 		} else {
-			return false
+			return false;
 		}
-	})
-
-}
-
+	});
+};
 
 const CurrentProjectScreenContainer = (): JSX.Element => {
 	const [projectText, setProjectText] = useState('');
@@ -24,9 +25,9 @@ const CurrentProjectScreenContainer = (): JSX.Element => {
 	const [schemaText, setSchemaText] = useState('');
 
 	//Fetch current project details from state storage
-	const currentProject = useAppSelector(state=>state.currentProject);
+	const currentProject = useAppSelector((state) => state.currentProject);
 
-	const projectList = useAppSelector(state=>state.projects.projectList) 
+	const projectList = useAppSelector((state) => state.projects.projectList);
 
 	//Populate text fields with current project data
 	useEffect(() => {
@@ -35,33 +36,89 @@ const CurrentProjectScreenContainer = (): JSX.Element => {
 		setSchemaText(currentProject.lastSchema?.name ?? '');
 	}, []);
 
-	const handleTextChange: InputChangeHandler = (event, targetInputField) => {
+	const handleTextChange: InputChangeHandler = async (
+		event,
+		targetInputField,
+	) => {
 		switch (targetInputField) {
 			case 'project_input':
-                setProjectText(event.target.value);
+				setProjectText(event.target.value);
 
 				//Check if only one project is matched, then update current project
-				if(helper(event.target.value, Object.keys(projectList).map(projectId => projectList[projectId]))){
-
+				if (
+					helper(
+						event.target.value,
+						Object.keys(projectList).map((projectId) => projectList[projectId]),
+					)
+				) {
 					//Get project details from name
-					const selectedProject: ProjectDetails = Object.values(projectList).find(
-						(project) => project.name === event.target.value
-					);
+					const selectedProject: ProjectDetails = Object.values(
+						projectList,
+					).find((project) => project.name === event.target.value);
 
 					//Change current project state
-					dispatch(changeProject({
-						...selectedProject,
-						lastModified: null,
-						lastSchema: null,
-						lastSession: null
-					}));
+					try {
+						await dispatch(changeCurrentProject(selectedProject.id)).unwrap();
+
+						//Update view params to ensure that current prject details is available throughout app
+						dispatch(changeView({
+							viewParams: {
+								...selectedProject,
+								lastSchema: null,
+                                lastSession: null,
+								lastModified: null
+							},
+							currentView: 'current_project'
+						}))
+						toast.success('Current project changed successfully', {
+							autoClose: 500, 
+							hideProgressBar: true
+						});
+					} catch (e) {
+						console.log(e);
+						toast.error('Could not change current project', {
+							autoClose: 500, 
+							hideProgressBar: true
+						});
+					}
 				}
 				break;
 			case 'session_input':
-                setSessionText(event.target.value)
+				setSessionText(event.target.value);
+
+				const sessionList = currentProject?.sessionNames ?? {};
+
+				//Check if only one session is matched, then update current project with last session data
+				if (
+					helper(
+						event.target.value,
+						Object.keys(sessionList).map((sessionId) => sessionList[sessionId]),
+					)
+				) {
+					//Get session details from name
+					const selectedSession: SessionDetails = Object.values(
+						sessionList,
+					).find((session) => session.name === event.target.value);
+
+					//Set new current project object
+					const newCurrentProject: CurrentProjectDetails = {
+						...currentProject,
+						lastSession: selectedSession,
+					};
+
+					//Change current project state
+					try {
+						await dispatch(
+							changeCurrentProjectDetails(newCurrentProject),
+						).unwrap();
+					} catch (e) {
+						console.log(e);
+						toast.error('Could not update current project');
+					}
+				}
 				break;
 			case 'schema_input':
-                setSchemaText(event.target.value)
+				setSchemaText(event.target.value);
 				break;
 			default:
 				break;
@@ -70,26 +127,6 @@ const CurrentProjectScreenContainer = (): JSX.Element => {
 
 	//Update current Project details based on selection
 	const dispatch = useAppDispatch();
-
-	const handleSelect:SelectHandler = (id, name, property)=>{
-		console.log(id)
-		//Update current project details in Redux store and change content on current project view accordingly
-		switch(property){
-			case "project":
-				
-				break
-			case "session":
-				dispatch(changeProjectDetails({ id, name, property }));
-				break
-			case "schema":
-				dispatch(changeProjectDetails({ id, name, property }));
-				break
-			default: 
-				break
-		}
-		
-		
-	}
 
 	//Text handler package
 	const inputText = {
@@ -103,7 +140,7 @@ const CurrentProjectScreenContainer = (): JSX.Element => {
 			<CurrentProjectScreen
 				projectList={projectList}
 				currentProject={currentProject}
-                inputText={inputText}
+				inputText={inputText}
 				onChange={handleTextChange}
 			/>
 		</>

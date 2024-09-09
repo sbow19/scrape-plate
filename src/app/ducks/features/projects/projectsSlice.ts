@@ -2,11 +2,11 @@
  * Manage projects  from storage
  * */
 import { createSlice } from "@reduxjs/toolkit";
-import  { fetchAllProjects, addProject, removeProject } from './projectSliceThunks'
+import  { fetchAllProjects, addProject, removeProject, removeSession, addSession } from './projectSliceThunks'
 
 
 const initialState: ProjectListFetch = {
-    projectList: [],
+    projectList: {},
     isLoading: false,
     isError: false
 };
@@ -27,10 +27,12 @@ export const projectsSlice = createSlice({
             //Pending sets loading element
             state.projectList = action.payload;
             state.isLoading = false;
+           
         })
         .addCase(fetchAllProjects.rejected, (state)=>{
             //Pending sets loading element
             state.isError = true;
+            state.isLoading = false;
         })
         
         //Add a new project
@@ -56,10 +58,44 @@ export const projectsSlice = createSlice({
         .addCase(removeProject.fulfilled, (state, action)=>{
             //Remove project if successful
             delete state.projectList[action.payload];
+            state.isLoading = false;
         })
         .addCase(removeProject.rejected, (state)=>{
             
             state.isError = false;
+            state.isLoading = false;
+            
+        })
+
+        //Remove session
+        .addCase(removeSession.pending, (state)=>{
+            state.isLoading = true;
+        })
+        .addCase(removeSession.fulfilled, (state, action)=>{
+
+            //Remove session if successfully removed from Indexed db
+            state.projectList[action.payload?.id] = action.payload; //Update the updated project
+            state.isLoading = false;
+        })
+        .addCase(removeSession.rejected, (state)=>{
+            
+            state.isLoading = false;
+            
+        })
+
+        //Add session
+        .addCase(addSession.pending, (state)=>{
+            state.isLoading = true;
+        })
+        .addCase(addSession.fulfilled, (state, action)=>{
+
+            // Replace altered project list if successfully removed from Indexed db
+            state.projectList[action.payload?.id] = action.payload; //Update the updated project
+            state.isLoading = false;
+        })
+        .addCase(addSession.rejected, (state)=>{
+            
+            state.isLoading = false;
             
         })
     }

@@ -6,15 +6,20 @@ import AddProjectButton from '#components/buttons/add_project_button';
 import EditSchemaButton from '#components/buttons/edit_schema_button';
 import DeleteSchemaButton from '#components/buttons/delete_schema_button';
 import ExportButton from '#components/buttons/export_button';
-import AddSchemaButton from '#components/buttons/add_schema_button';
 import SetCurrentProjectButton from '#components/buttons/set_current_project_button';
 import ViewDetailsButton from '#components/buttons/view_details_button';
 import DeleteProjectButton from '#components/buttons/delete_project_button';
 import DeleteSessionButton from '#components/buttons/delete_session_button';
+import AddSessionButton from '#components/buttons/add_session_button';
+import { useAppSelector } from 'app/utils/hooks';
 
 const ContentTemplate: React.FC<ContentContainerProps> = ({ content }) => {
 	const { currentView, title, tableHeaders, tableRowData, id, names } = content;
 
+	//Get view params
+	const { viewParams } = useAppSelector(state=>state.navigation)
+
+	//Form title string 
 	let headerString: string;
 
 	if (names !== null) {
@@ -22,9 +27,11 @@ const ContentTemplate: React.FC<ContentContainerProps> = ({ content }) => {
 			typeof names === 'string' ? names : `${names[0]} \: ${names[1]}`;
 	} else {
 		headerString = '';
-	}
+	};
 
+	//Default
 	let ButtonToRender: JSX.Element = <></>;
+
 
 	switch (currentView) {
 		case 'schemas':
@@ -53,11 +60,11 @@ const ContentTemplate: React.FC<ContentContainerProps> = ({ content }) => {
 						currentView={currentView}
 						buttonStyle='main-button-inside'
 					/>
-					<AddSchemaButton
+					<AddSessionButton
 						id={id}
 						currentView={currentView}
 						buttonStyle='main-button-inside'
-					/>
+					/>  
 					<DeleteProjectButton
 						id={id}
 						currentView={currentView}
@@ -76,7 +83,8 @@ const ContentTemplate: React.FC<ContentContainerProps> = ({ content }) => {
 						buttonStyle='main-button-inside'
 					/>
 					<DeleteSessionButton
-						id={id}
+						projectId={viewParams.id}
+						sessionId={id}
 						currentView={currentView}
 						buttonStyle='main-button-inside'
 					/>

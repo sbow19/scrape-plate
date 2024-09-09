@@ -111,15 +111,146 @@ chrome.runtime.onMessage.addListener(async (
 
         return true; //Indicate that service worker response is asynchronous
     }
-})
+});
 
+
+//get current project
+chrome.runtime.onMessage.addListener(async (
+	message: ServiceWorkerMessage<'get_current_project'>,
+    sender,
+    sendResponse,
+)=>{
+
+	//Check if action is fetch all projects
+	if(message.action === "get_current_project"){
+
+		let serviceWorkerResponse: ServiceWorkerResponse["get_current_project"] = {};
+
+    	IndexedDBWrapper.getCurrentProject().then((currentProjectDetails)=>{
+			
+			sendResponse(currentProjectDetails);
+
+		}).catch((e)=>{
+			console.log(typeof e);
+			sendResponse(serviceWorkerResponse);
+		})
+
+        return true; //Indicate that service worker response is asynchronous
+    }
+});
+
+//Update current project
+chrome.runtime.onMessage.addListener(async (
+	message: ServiceWorkerMessage<'change_current_project'>,
+    sender,
+    sendResponse,
+)=>{
+
+	//Check if action is fetch all projects
+	if(message.action === "change_current_project"){
+
+		let serviceWorkerResponse: ServiceWorkerResponse["change_current_project"] = {};
+
+    	IndexedDBWrapper.changeCurrentProject(message.payload).then((projectDetails)=>{
+			
+			sendResponse(projectDetails);
+
+		}).catch((e)=>{
+			console.log(typeof e);
+			sendResponse(serviceWorkerResponse);
+		})
+
+        return true; //Indicate that service worker response is asynchronous
+    }
+});
+
+//Update current project details
+chrome.runtime.onMessage.addListener(async (
+	message: ServiceWorkerMessage<'change_current_project_details'>,
+    sender,
+    sendResponse,
+)=>{
+
+	//Check if action is fetch all projects
+	if(message.action === "change_current_project_details"){
+
+		const serviceWorkerResponse: ServiceWorkerResponse["change_current_project_details"] = {
+			success: false
+		};
+
+    	IndexedDBWrapper.changeCurrentProjectDetails(message.payload).then(()=>{
+			
+			serviceWorkerResponse.success = true;
+			sendResponse(serviceWorkerResponse);
+
+		}).catch((e)=>{
+			console.log(typeof e);
+			sendResponse(serviceWorkerResponse);
+		})
+
+        return true; //Indicate that service worker response is asynchronous
+    }
+});
+
+//REmove current project 
+chrome.runtime.onMessage.addListener(async (
+	message: ServiceWorkerMessage<'remove_current_project'>,
+    sender,
+    sendResponse,
+)=>{
+
+	//Check if action is remove current project
+	if(message.action === "remove_current_project"){
+
+		const serviceWorkerResponse: ServiceWorkerResponse["remove_current_project"] = { success: false};
+
+    	IndexedDBWrapper.removeCurrentProject().then(()=>{
+
+			serviceWorkerResponse.success = true;
+			
+			sendResponse(serviceWorkerResponse);
+
+		}).catch((e)=>{
+			console.log(typeof e);
+			sendResponse(serviceWorkerResponse);
+		})
+
+        return true; //Indicate that service worker response is asynchronous
+    }
+});
+
+//Remove current session
+chrome.runtime.onMessage.addListener(async (
+	message: ServiceWorkerMessage<'remove_current_session'>,
+    sender,
+    sendResponse,
+)=>{
+
+	//Check if action is remove current session
+	if(message.action === "remove_current_session"){
+
+		const serviceWorkerResponse: ServiceWorkerResponse["remove_current_session"] = { success: false};
+
+    	IndexedDBWrapper.removeCurrentSession(message.payload).then(()=>{
+
+			serviceWorkerResponse.success = true;
+			sendResponse(serviceWorkerResponse);
+
+		}).catch((e)=>{
+			console.log(typeof e);
+			sendResponse(serviceWorkerResponse);
+		})
+
+        return true; //Indicate that service worker response is asynchronous
+    }
+});
 
 //Async helper function
 const addToDatabase = async(store: StoreName, data: StoreSchema[StoreName])=>{
 
 	try{
-		await IndexedDBWrapper.addToStore(store, data);
-		return "Add to database successful"
+		const newProjectDetails = await IndexedDBWrapper.addToStore(store, data);
+		return newProjectDetails
 
 	}catch(e){
 
@@ -147,8 +278,9 @@ chrome.runtime.onMessage.addListener((
 		}
 
 		//Asynchronously handle database operation
-		addToDatabase(store, data).then(()=>{
+		addToDatabase(store, data).then((newProjectDetails)=>{
 			serviceWorkerResponse.success = true;
+			serviceWorkerResponse.data = newProjectDetails;
 			sendResponse(serviceWorkerResponse)
 
 		}).catch((e)=>{
@@ -166,8 +298,8 @@ chrome.runtime.onMessage.addListener((
 //Helper function remove from database
 const removeFromDatabase = async(data: ServiceWorkerPayloads["remove_from_database"])=>{
 
-	await IndexedDBWrapper.removeFromStore(data.store, data.data);
-	return "remove from database successful"
+	const newData = await IndexedDBWrapper.removeFromStore(data.store, data.data);
+	return newData
 
 }
 
@@ -187,8 +319,9 @@ chrome.runtime.onMessage.addListener((
 		}
 
 		//Asynchronously handle database operation
-		removeFromDatabase(payload).then(()=>{
+		removeFromDatabase(payload).then((newData)=>{
 			serviceWorkerResponse.success = true;
+			serviceWorkerResponse.data = newData;
 			sendResponse(serviceWorkerResponse)
 
 		}).catch((e)=>{

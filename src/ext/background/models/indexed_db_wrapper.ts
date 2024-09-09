@@ -43,7 +43,7 @@ class IndexedDBWrapper {
 						switch (uncreatedStore) {
 							case 'current_project':
 								//Only one key value pair exists in this object store
-								db.createObjectStore(uncreatedStore);
+								db.createObjectStore(uncreatedStore, {autoIncrement: true});
 								break;
 							case 'user_data':
 								break;
@@ -95,8 +95,32 @@ class IndexedDBWrapper {
 
         const transaction = IndexedDBWrapper.db.transaction(storeName, 'readwrite');
 
-        //Carry out transaction on specific store
-        await transaction.store.add(storeItem);
+		console.log(storeItem)
+
+		//Determine add logic based on add type
+		switch(storeItem.addType){
+			case "project":
+				//Add project to projects store
+				await transaction.store.add(storeItem.data);
+				break
+			case "session":
+
+				//Fetch project to add session to
+				const newSessionData: SessionDetails = storeItem.data; //Where data is SessionDetails
+
+				const targetProject = await transaction.store.get(newSessionData.projectId);
+
+				//Add new session to target project
+				targetProject.sessionNames[newSessionData.id] = newSessionData;
+
+				await transaction.store.put(targetProject); //Automatically update project list store
+
+				return targetProject
+			default: 
+				break
+		}
+
+       
 
         //Commit transaction
         await transaction.done;
@@ -120,13 +144,27 @@ class IndexedDBWrapper {
 				}else if (storeItem.dataType === "session"){
 					//Remove session from specific project. 
 					//Get session >> remove session with 
-					const project: ProjectDetails = await transaction.store.get(storeItem.mainId);
+					const projects: ProjectDetails[] = await transaction.store.getAll();
+
+					//Return matching project
+					const targetProject = projects.find((project)=> project.id === storeItem.mainId);
 
 					//Remove session from project details
-					delete project.sessionNames[storeItem.secondaryId];
+					delete targetProject.sessionNames[storeItem.secondaryId];
 
 					//Replace updated project object to store
-					await transaction.store.put(project, storeItem.mainId);
+					
+					try{
+
+						await transaction.store.put(targetProject);
+
+					}catch(e){
+						console.log(e)
+					}
+
+					await transaction.done;
+
+					return targetProject
 		
 
 				}else if (storeItem.dataType === "project_schema"){
@@ -140,6 +178,8 @@ class IndexedDBWrapper {
 					//Replace updated project object to store
 					await transaction.store.put(project, storeItem.mainId);
 
+					await transaction.done
+
 				}else if (storeItem.dataType === "session_schema"){
 
 					//Remove schema from specific sessionList 
@@ -150,6 +190,8 @@ class IndexedDBWrapper {
 
 					//Save updated project object to store
 					await transaction.store.put(project, storeItem.mainId);
+
+					await transaction.done
 
 
 				} 
@@ -164,12 +206,16 @@ class IndexedDBWrapper {
 					//Save updated project object to store
 					await transaction.store.put(project, storeItem.mainId);
 
+					await transaction.done
+
 				}
 
 				break
 
 			case "schemas":
 				transaction.store.delete(storeItem.mainId);
+
+				await transaction.done
 				break
 			default:
 				break
@@ -211,6 +257,151 @@ class IndexedDBWrapper {
 		await transaction.done
 
 		return projects
+	}
+
+	static async changeCurrentProject(projectId: ProjectId){
+		//Reopen db if Service Worker closed
+		if(!IndexedDBWrapper.db){
+			await IndexedDBWrapper.createStoreInDB()
+		};
+
+	
+
+		//Fetch project details from store
+		const transactionOne = IndexedDBWrapper.db.transaction("projects", "readonly");
+
+		let projectDetails: ProjectDetails = null;
+
+		try{
+
+			projectDetails = await transactionOne.store.get(projectId);
+
+		}catch(e){
+
+			throw new Error("Could not fetch project details")
+
+		}
+
+		await transactionOne.done
+		
+
+		const transactionTwo = IndexedDBWrapper.db.transaction("current_project", 'readwrite');
+
+		//Set current project
+		const currentProjectDetails:CurrentProjectDetails = {
+			...projectDetails,
+			lastSchema: null,
+			lastSession: null,
+			lastModified: null
+		} 
+
+		//Remove current project
+		await transactionTwo.store.clear();
+
+        await transactionTwo.store.put(currentProjectDetails);
+
+		await transactionTwo.done
+
+		//REturn project details to client
+		return projectDetails
+
+	}
+
+	static async changeCurrentProjectDetails(newCurrentProjectDetails: CurrentProjectDetails){
+		//Reopen db if Service Worker closed
+		if(!IndexedDBWrapper.db){
+			await IndexedDBWrapper.createStoreInDB()
+		};		
+
+		const transaction = IndexedDBWrapper.db.transaction("current_project", 'readwrite');
+
+		//Remove current project
+		await transaction.store.clear();
+
+        await transaction.store.put(newCurrentProjectDetails);
+
+		await transaction.done
+
+	}
+
+
+	static async getCurrentProject(){
+
+		//Reopen db if Service Worker closed
+		if(!IndexedDBWrapper.db){
+			await IndexedDBWrapper.createStoreInDB()
+		};
+
+		const transaction = IndexedDBWrapper.db.transaction("current_project", 'readonly');
+
+		let currentProjectDetails: CurrentProjectDetails = null;
+
+		try{
+
+			[currentProjectDetails] = await transaction.store.getAll();
+
+		}catch(e){
+
+			throw new Error("Could not fetch project details")
+
+		}
+
+		await transaction.done;
+
+		return currentProjectDetails
+
+	}
+
+	static async removeCurrentProject(){
+
+		//Reopen db if Service Worker closed
+		if(!IndexedDBWrapper.db){
+			await IndexedDBWrapper.createStoreInDB()
+		};
+
+		const transaction = IndexedDBWrapper.db.transaction("current_project", 'readwrite');
+
+		try{
+
+			await transaction.store.clear();
+
+		}catch(e){
+
+			throw new Error("Could not fetch project details")
+
+		} finally {
+			await transaction.done;
+		}
+
+
+	}
+
+	static async removeCurrentSession(sessionId: SessionId){
+
+		//Reopen db if Service Worker closed
+		if(!IndexedDBWrapper.db){
+			await IndexedDBWrapper.createStoreInDB()
+		};
+
+		const transaction = IndexedDBWrapper.db.transaction("current_project", 'readwrite');
+
+		try{
+			//Fetch project
+			const [currentProject] = await transaction.store.getAll();
+
+			//Remove session from current project
+			delete currentProject.sessionNames[sessionId];
+			
+			await transaction.done
+
+		}catch(e){
+
+			throw new Error("Could not remove current session")
+
+		} finally {
+			await transaction.done;
+		}
+
 
 	}
 }

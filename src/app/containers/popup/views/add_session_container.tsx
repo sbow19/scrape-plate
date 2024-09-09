@@ -1,60 +1,40 @@
 /**
- * Add project view container for Chrome Extension popup
+ * Add session view container for Chrome Extension popup
  */
 
 import React, { useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from 'app/utils/hooks';
-import { addProject } from '#ducks/features/projects/projectSliceThunks';
-import AddProject from '#components/popup/views/add_project';
+import { addSession } from '#ducks/features/projects/projectSliceThunks';
+import AddSession from '#components/popup/views/add_session';
 
 import {
 	generateId,
-	createEmptySessions,
-	createSchemaListObject,
 } from 'app/utils/helper_funcs';
 import { changeView } from '#ducks/features/navigation/navigationSlice';
 
 import { toast } from 'react-toastify';
 
-const AddProjectContainer: React.FC = () => {
+const AddSessionContainer: React.FC = () => {
 	/* Redux State */
 	const dispatch = useAppDispatch();
 
-	// Fetch schemas
+	// Fetch state details
 	const userSchemas = useAppSelector((state) => state.schemas);
 
-	const currentProjectDetails = useAppSelector(state=>state.currentProject)
+	const currentProjectDetails = useAppSelector(state=>state.currentProject);
 
-	//Fetch loading projects loading state
-	const { isLoading, isError } = useAppSelector((state) => state.projects);
+    const viewParams: ProjectDetails = useAppSelector(state=>state.navigation.viewParams)
 
-	//Project name state
-	const [projectName, setProjectName] = useState('');
 
-	//Session list state
-	const [sessionList, setSessionList] = useState<Array<string>>([]);
-
-	//Typed session name
-	const [sessionName, setSessionName] = useState<string>('');
+	//Session name state
+	const [sessionName, setSessionName] = useState('');
 
 	//Session list handler
-	const sessionAddHandler = (
-		e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-	) => {
-		//Prevent default behaviour
-		e.preventDefault();
-
-		//If no text, don't do anything
-		if (sessionName.trim() === '') {
-			return;
-		}
-
-		//Add session name to on screen list
-		setSessionList([...sessionList, sessionName]);
+	const sessionNameHandler = (sessionName: string) => {
 
 		//reset input
-		setSessionName('');
+		setSessionName(sessionName);
 	};
 
 	//Schema list state
@@ -112,39 +92,25 @@ const AddProjectContainer: React.FC = () => {
 		});
 	};
 
-	const handleSessionDelete = (
-		e: React.MouseEvent<HTMLButtonElement>,
-		sessionName: string,
-	) => {
-		e.preventDefault();
+	//Add session handler
+	const handleAddSession = async() => {
+		const newSessionId = generateId();
 
-		setSessionList((prevSessionList) => {
-			//Filter selected item
-			const newSessionList = prevSessionList.filter(
-				(session) => session !== sessionName,
-			);
-			return newSessionList;
-		});
-	};
-
-	//Add project handler
-	const handleAddProject = async() => {
-		const newProjectId = generateId();
-
-		//New Project details object
-		const newProject: ProjectDetails = {
-			name: projectName,
-			id: newProjectId,
-			sessionNames: createEmptySessions(sessionList, newProjectId, projectName),
-			projectSchemas: createSchemaListObject(schemaList, userSchemas),
+		//New session details object
+		const newSession: SessionDetails = {
+			name: sessionName.trim(),
+			id: newSessionId,
+            projectId: viewParams.id,
+            projectName: viewParams.name,
+            captures: {},
 			lastModified: new Date().toISOString(),
 		};
 
-		//Dispatch action to add project to project list
+		//Dispatch action to add session
 		try{
-			await dispatch(addProject(newProject)).unwrap();
+			await dispatch(addSession(newSession)).unwrap();
 
-			toast.success('Project added', {
+			toast.success('Session added', {
 				autoClose: 1000,
 				pauseOnHover: false,
 				pauseOnFocusLoss: false,
@@ -153,8 +119,7 @@ const AddProjectContainer: React.FC = () => {
 			}); // Use unwrap() to handle rejected promises
 
 			//Remove everything on the screen
-			setProjectName('');
-			setSessionList([]);
+			setSessionName('');
 			setSchemaList({});
 
 			//Navigate to current project screen or pop
@@ -167,7 +132,7 @@ const AddProjectContainer: React.FC = () => {
 
 		}catch(e){
 
-			toast.error('Failed to add project', {
+			toast.error('Failed to add session', {
 				autoClose: 1000,
 				pauseOnHover: false,
 				pauseOnFocusLoss: false,
@@ -179,24 +144,18 @@ const AddProjectContainer: React.FC = () => {
 	};
 
 	return (
-		<AddProject
+		<AddSession
 			userSchemas={userSchemas}
-			sessionList={sessionList}
-			projectName={projectName}
-			onProjectNameChange={setProjectName}
-			onSessionAdd={sessionAddHandler}
 			sessionName={sessionName}
-			onSessionNameChange={setSessionName}
-			onSessionDelete={handleSessionDelete}
+            projectName={viewParams.name}
+			onSessionNameChange={sessionNameHandler}
 			schemaList={schemaList}
 			onSchemaAdd={schemaAddHandler}
 			onSchemaSelect={handleSchemaSelect}
 			onSchemaDelete={handleSchemaDelete}
-			onAddProject={handleAddProject}
-			isLoading={isLoading}
-			isError={isError}
+            onAddSession={handleAddSession}
 		/>
 	);
 };
 
-export default AddProjectContainer;
+export default AddSessionContainer;
