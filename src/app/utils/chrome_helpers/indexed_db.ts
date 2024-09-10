@@ -234,9 +234,9 @@ class ServiceWorkerDBCalls {
 	 * Schemas logic
 	 */
 
-	static fetchAllSchemas = async (): Promise<SchemaList> => {
+	static fetchAllSchemas = async () => {
 		try {
-			const allSchemas: SchemaList = await chrome.runtime.sendMessage<
+			const allSchemas: SchemaDetails[] | [] = await chrome.runtime.sendMessage<
 				ServiceWorkerMessage<'fetch_all_schemas'>
 			>({
 				action: 'fetch_all_schemas',
@@ -252,7 +252,7 @@ class ServiceWorkerDBCalls {
 	};
 
 	static addSchema = async (
-		schemaDetails: SchemaDetails,
+		schemaDetails: SchemaDetailsAdd,
 	): Promise<ServiceWorkerResponse['add_to_database']> => {
 		try {
 			const result: ServiceWorkerResponse['add_to_database'] =
@@ -262,7 +262,10 @@ class ServiceWorkerDBCalls {
 					action: 'add_to_database',
 					payload: {
 						store: 'schemas',
-						data: schemaDetails,
+						data: {
+							addType: "schema",
+							data: schemaDetails
+						},
 					},
 				});
 

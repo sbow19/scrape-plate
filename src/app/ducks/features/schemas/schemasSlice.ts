@@ -2,7 +2,7 @@
  * Manage schemas from storage
  * */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { fetchAllSchemas, addSchema, removeSchema } from "./schemaSliceThunks";
+import { fetchAllSchemas, addSchema } from "./schemaSliceThunks";
 
 
 const initialState: SchemaList = {};
@@ -12,24 +12,29 @@ export const schemasSlice = createSlice({
     initialState,
     reducers: {
 
+
     },
     extraReducers: (builder)=>{
         //Fetch all schemas
-        builder.addCase(fetchAllSchemas.fulfilled, (state, action)=>{
-            state = action.payload;
-            return state
+        builder
+        .addCase(fetchAllSchemas.pending, ()=>{
         })
-        
-        //Add a new schema
-        builder.addCase(addSchema.fulfilled, (state, action)=>{
-            //Add new schema to schema list if  successful
-            state[action.payload.id] = action.payload;
+        .addCase(fetchAllSchemas.fulfilled, (state, action)=>{
+            //Fetch all schemas to schema list if successful
+            state = action.payload;
+        })
+        .addCase(fetchAllSchemas.rejected, ()=>{
         })
 
-        //Remove a schema
-        builder.addCase(removeSchema.fulfilled, (state, action)=>{
-            //Remove schema if successful
-            delete state[action.payload];
+        //Add Schema
+        .addCase(addSchema.pending, ()=>{
+        })
+        .addCase(addSchema.fulfilled, (state, action)=>{
+
+            //Set new property of schema list object
+            state[action.payload.id] = action.payload;
+        })
+        .addCase(addSchema.rejected, ()=>{
         })
     }
 });

@@ -96,7 +96,6 @@ export const addSession = createAsyncThunk(
             //Add session to project list in backend
             const { data: newProjectDetails } = await ServiceWorkerDBCalls.addSession(sessionDetails);
 
-            console.log(newProjectDetails)
             //Need to update the navigation stack recursively to remove session
 			dispatch(addSessionToNavStack(newProjectDetails));
 

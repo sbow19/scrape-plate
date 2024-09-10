@@ -7,11 +7,9 @@ import * as styles from '#styles/side_panel.module.css';
 import EditSchemaContainer from '#containers/side_panel/schema_editor/schema_editor_container';
 import CaptureViewContainer from '#containers/side_panel/schema_capture/schema_capture_view_container';
 import CreatorViewContainer from '#containers/side_panel/schema_creator/schema_creator_view_container';
-import SidePanelGridContainer from '#containers/side_panel/shared/side_panel_grid_container';
 
 
 const SidePanelView: React.FC<SidePanelProps> = ({ currentView }) => {
-	//Fetch state content
 
 	//Default content
 	let detailsContainer = <></>;
@@ -20,23 +18,18 @@ const SidePanelView: React.FC<SidePanelProps> = ({ currentView }) => {
 	if (currentView === 'schema_editor') {
 		heading = 'Edit Schema';
 		detailsContainer = (
-			<EditSchemaContainer>
-				<SidePanelGridContainer />
-			</EditSchemaContainer>
+			<EditSchemaContainer/>
 		);
 	} else if (currentView === 'schema_capture') {
 		heading = 'Review Capture';
 		detailsContainer = (
-			<CaptureViewContainer>
-				<SidePanelGridContainer />
-			</CaptureViewContainer>
+			<CaptureViewContainer/>
 		);
 	} else if (currentView === 'schema_creator') {
 		heading = 'Create Schema';
 		detailsContainer = (
-			<CreatorViewContainer >
-				<SidePanelGridContainer />
-			</CreatorViewContainer >
+			<CreatorViewContainer />
+	
 		);
 	}
 

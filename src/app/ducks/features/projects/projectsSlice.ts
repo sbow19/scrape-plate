@@ -1,7 +1,7 @@
 /**
  * Manage projects  from storage
  * */
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import  { fetchAllProjects, addProject, removeProject, removeSession, addSession } from './projectSliceThunks'
 
 
@@ -15,6 +15,12 @@ export const projectsSlice = createSlice({
     name: "projects",
     initialState,
     reducers: {
+
+        updateAllProjects: (state, action: PayloadAction<ProjectsList>)=>{
+
+            state.projectList = action.payload;
+
+        }
 
    
     },
@@ -101,6 +107,6 @@ export const projectsSlice = createSlice({
     }
 });
 
-export const { } = projectsSlice.actions;
+export const { updateAllProjects } = projectsSlice.actions;
 
 export default projectsSlice.reducer;

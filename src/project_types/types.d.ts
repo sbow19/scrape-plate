@@ -48,15 +48,19 @@ declare global {
 	type ProjectId = string;
 
 	type SessionIdObject = {
-		sessionId: SessionId
-		projectId: ProjectId
-	}
+		sessionId: SessionId;
+		projectId: ProjectId;
+	};
 
 	type SchemaDetails = {
 		name: SchemaName;
 		id: SchemaId;
 		url: string;
 		schema: Schema;
+	};
+
+	type Schema = {
+		[key: string | RegExp]: string | RegExp | null;
 	};
 
 	/* Handler functions */
@@ -126,10 +130,15 @@ declare global {
 				currentStack: NavigationStackArray;
 		  }
 		| {
-			currentView: 'add_session';
-			viewParams: ProjectDetails;
-			currentStack: NavigationStackArray;
-	  };
+				currentView: 'add_session';
+				viewParams: ProjectDetails;
+				currentStack: NavigationStackArray;
+		  }
+		| {
+				currentView: 'schema_capture';
+				viewParams: SchemaDetails;
+				currentStack: NavigationStackArray;
+		  };
 
 	type Views =
 		| 'welcome'
@@ -142,15 +151,15 @@ declare global {
 		| 'add_project'
 		| 'manage_schema'
 		| 'add_schema'
-		| "add_session"
-		| "schema_capture"
-		| "schema_editor"
-		| "schema_creator"
+		| 'add_session'
+		| 'schema_capture'
+		| 'schema_editor'
+		| 'schema_creator';
 
 	/* Views params */
 	interface ManageSessionParams extends ProjectDetails {
 		sessionId: SessionId | null;
-	};
+	}
 
 	type ManageSchemaParams = {
 		schemaId: SchemaId | null;
@@ -325,16 +334,35 @@ declare global {
 		onBack: () => void;
 	}
 
-	interface MainContainerProps {}
-
 	interface SidePanelProps {
-		currentView: 'schema_capture' | 'schema_editor' | "schema_creator";
+		currentView: 'schema_capture' | 'schema_editor' | 'schema_creator';
 	}
-
-	interface SidePanelContainerProps {}
 
 	interface AppProps {
 		renderContext: ServiceWorkerResponse['get_render_context'];
+	}
+
+	interface SchemaCreatorViewProps {
+		schemaName: string;
+		isSchemaNameDuplicate: boolean;
+		onSchemaNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+
+		projectList: ProjectsList;
+		projectSelection: ProjectDetails | null;
+		projectSelectionList: ProjectsList;
+		onAddProject: (
+			event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+		) => void;
+		onSelectProject: (projectName: string) => void;
+		onDeleteProject: (
+			e: React.MouseEvent<HTMLButtonElement>,
+			ProjectId: ProjectId,
+		) => void;
+
+		url: string;
+		onUrlChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+
+		onAddSchema: () => Promise<void>;
 	}
 
 	/* Chrome messages templates */
@@ -367,7 +395,7 @@ declare global {
 		get_current_project: null;
 		remove_current_project: null;
 		remove_current_session: SessionId;
-		change_current_project_details: CurrentProjectDetails
+		change_current_project_details: CurrentProjectDetails;
 	};
 
 	type StoreRemoveData = {
@@ -384,9 +412,14 @@ declare global {
 	};
 
 	type StoreUpdateData = {
-		data: ProjectDetails | SchemaDetails;
+		data: ProjectDetails | SchemaDetailsAdd;
 		mainId: ProjectId | SchemaId; //Store item id
 	};
+
+	type SchemaDetailsAdd = {
+		schemaDetails: SchemaDetails;
+		projectIds: ProjectId[]
+	}
 
 	type ServiceWorkerAction = keyof ServiceWorkerResponse;
 
@@ -395,33 +428,33 @@ declare global {
 			| { renderContext: 'popup'; view: 'welcome' | 'current_project' }
 			| {
 					renderContext: 'side_panel';
-					view: 'schema_editor' | 'schema_capture' | "schema_creator";
+					view: 'schema_editor' | 'schema_capture' | 'schema_creator';
 			  };
 		open_side_panel: null;
 		add_to_database: {
 			success: boolean;
-			data?: ProjectDetails
+			data?: ProjectDetails | SchemaDetails | ProjectDetails[];
 		};
 		remove_from_database: {
 			success: boolean;
-			data?: ProjectDetails 
+			data?: ProjectDetails;
 		};
 		update_database: {
 			success: boolean;
 		};
 		fetch_all_projects: ProjectDetails[] | [];
-		fetch_all_schemas: SchemaList;
+		fetch_all_schemas: SchemaDetails[] | [];
 		change_current_project: ProjectDetails;
 		get_current_project: CurrentProjectDetails | null;
 		remove_current_project: {
-			success: boolean
-		}
+			success: boolean;
+		};
 		remove_current_session: {
 			success: boolean;
-		}
+		};
 		change_current_project_details: {
-			success: boolean
-		}
+			success: boolean;
+		};
 	}
 
 	type ServiceWorkerResponseBase = {
@@ -436,10 +469,13 @@ declare global {
 
 	type StoreSchema = {
 		projects: {
-			addType: "project" | "session" | "schema"
-			data: ProjectDetails | SessionDetails
+			addType: 'project' | 'session' | 'schema';
+			data: ProjectDetails | SessionDetails;
 		};
-		schemas: SchemaDetails;
+		schemas: {
+			addType: "schema";
+			data: SchemaDetailsAdd
+		};
 		current_project: CurrentProjectDetails;
 		user_data: {};
 	};
@@ -450,7 +486,7 @@ declare global {
 	};
 
 	/* Chrome helpers */
-	type SidePanelViews = 'schema_capture' | 'schema_editor' | "schema_creator";
+	type SidePanelViews = 'schema_capture' | 'schema_editor' | 'schema_creator';
 
 	/* Thunks async promist state */
 	interface ProjectListFetch extends PromiseState {

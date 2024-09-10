@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 
 /* Ensures that styles applied to toast notificatios are done correctly */
 import { injectStyle } from 'react-toastify/dist/inject-style';
+import { fetchAllSchemas } from '#ducks/features/schemas/schemaSliceThunks';
 injectStyle();
 
 /**
@@ -94,8 +95,30 @@ const App: React.FC<AppProps> = ({ renderContext }) => {
 		fetchCurrentProject();
 	}, [dispatch]);
 
-	//If current project, then we set render context to current project
+	//Fetch all schemas
 
+	useEffect(() => {
+		const fetchSchemas = async () => {
+			try {
+				await dispatch(fetchAllSchemas()).unwrap();
+
+			} catch (err) {
+				console.error('Failed to fetch schemas:', err);
+				toast.error('Schemas failed to load', {
+					autoClose: 1000,
+					pauseOnHover: false,
+					pauseOnFocusLoss: false,
+					closeOnClick: true,
+					hideProgressBar: true,
+				});
+			}
+		};
+
+		fetchSchemas();
+	}, [dispatch]);
+
+
+	// Render the main app based on the render context
 	if (renderContext.renderContext === 'popup') {
 		return (
 			<>

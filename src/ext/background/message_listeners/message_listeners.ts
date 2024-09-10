@@ -249,7 +249,7 @@ chrome.runtime.onMessage.addListener(async (
 const addToDatabase = async(store: StoreName, data: StoreSchema[StoreName])=>{
 
 	try{
-		const newProjectDetails = await IndexedDBWrapper.addToStore(store, data);
+		const newProjectDetails: ProjectDetails[] = await IndexedDBWrapper.addToStore(store, data);
 		return newProjectDetails
 
 	}catch(e){
@@ -374,5 +374,48 @@ chrome.runtime.onMessage.addListener((
 		
 	} 
 });
+
+//Schemas
+
+const fetchAllSchemas = async()=>{
+
+	try{
+		const schemaList = await IndexedDBWrapper.fetchAllSchemas();
+		return schemaList
+
+	}catch(e){
+
+		console.log(e);
+		throw new Error("")
+
+	} 
+
+}
+
+
+chrome.runtime.onMessage.addListener(async (
+	message: ServiceWorkerMessage<'fetch_all_schemas'>,
+    sender,
+    sendResponse,
+)=>{
+
+	//Check if action is fetch all schemas
+	if(message.action === "fetch_all_schemas"){
+
+		let serviceWorkerResponse: ServiceWorkerResponse["fetch_all_schemas"] = [];
+
+    	fetchAllSchemas().then((schemaList)=>{
+			serviceWorkerResponse = schemaList;
+			sendResponse(serviceWorkerResponse)
+
+		}).catch((e)=>{
+			console.log(typeof e);
+			sendResponse(serviceWorkerResponse);
+		})
+
+        return true; //Indicate that service worker response is asynchronous
+    }
+});
+
 
 export {};

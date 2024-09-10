@@ -1,5 +1,6 @@
 import React from 'react';
 import CaptureView from '#components/side_panel/schema_capture/schema_capture_view';
+import SidePanelGridContainer from '../shared/side_panel_grid_container';
 
 
 const CaptureViewContainer: React.FC = ({children}) => {
@@ -9,7 +10,7 @@ const CaptureViewContainer: React.FC = ({children}) => {
 			<CaptureView />
 
 			{/* Grid to populate */}
-			{children}
+			<SidePanelGridContainer />
 		</>
 	);
 };
