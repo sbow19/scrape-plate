@@ -1,4 +1,4 @@
-# Quick Scrape 
+# Scrape Plate 
 
 Custom scraping tool for static and dynamic web-sites. Perfect for open-source researchers doing repetitive information gathering tasks.
 
